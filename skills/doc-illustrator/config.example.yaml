@@ -1,0 +1,7 @@
+# doc-illustrator 配置
+
+# 图表语言（与文档语言一致）
+language: "zh"  # zh | en
+
+# 是否在生成后提议模板沉淀
+suggest_template_save: true

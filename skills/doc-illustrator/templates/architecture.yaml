@@ -1,0 +1,20 @@
+name: "架构图"
+description: "展示系统分层、组件关系、环境栈"
+keywords: ["架构", "环境", "层次", "栈", "组件", "模块", "服务", "依赖"]
+patterns:
+  - type: "layered"
+    indicators: ["层", "上下", "基础", "底层", "顶层"]
+  - type: "component"
+    indicators: ["模块", "组件", "服务", "接口"]
+  - type: "stack"
+    indicators: ["栈", "环境", "安装", "部署"]
+
+mermaid_guidance: |
+  使用 graph TB（自上而下）或 graph LR（左至右）。
+  分层用 subgraph 表示，组件用节点表示。
+  层间关系用箭头标注依赖方向。
+  样式：使用不同形状区分层次（矩形=基础设施，圆角=框架，六边形=应用）。
+
+examples:
+  - "CANN → torch_npu → DrivingSDK → 模型依赖库 的环境栈"
+  - "前端 → API网关 → 微服务 → 数据库 的分层架构"
