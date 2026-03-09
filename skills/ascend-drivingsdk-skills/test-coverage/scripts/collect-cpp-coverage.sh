@@ -7,8 +7,8 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SUITE_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
-source "$SUITE_DIR/_lib/coverage-common.sh"
+SKILL_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+source "$SKILL_DIR/_lib/coverage-common.sh"
 
 # 默认值
 PROJECT_ROOT=""
