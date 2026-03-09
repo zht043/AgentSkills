@@ -1,0 +1,28 @@
+# DrivingSDK 容器部署配置
+# 使用方式：复制为 config.yaml，由 agent 引导填写
+
+images:
+  registry: "swr.cn-south-1.myhuaweicloud.com/ascendhub/drivingsdk"
+  versions:
+    - tag: "8.5.0_alpha001"
+      archs: ["arm64"]
+    - tag: "8.3.RC1_alpha001"
+      archs: ["arm64"]
+    # 用户可扩展更多版本和架构
+    # - tag: "x.y.z"
+    #   archs: ["arm64", "x86_64"]
+
+conda_envs:
+  - name: "torch2.1.0_py38"
+    torch: "2.1.0"
+    python: "3.8"
+  - name: "torch2.6.0_py310"
+    torch: "2.6.0"
+    python: "3.10"
+  - name: "torch2.7.1_py310"
+    torch: "2.7.1"
+    python: "3.10"
+
+defaults:
+  ssh_port: 2222
+  python: "3.8"
