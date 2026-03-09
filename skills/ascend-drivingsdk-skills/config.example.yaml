@@ -1,0 +1,28 @@
+# Ascend DrivingSDK Skills 配置模板
+# 使用方式：复制为 config.yaml，由 agent 引导填写
+
+coverage:
+  # 项目根目录（留空则自动检测）
+  project_root: ""
+
+  cpp:
+    # C++ 覆盖率 HTML 报告输出目录
+    output_dir: cpp_lcov_result
+    # lcov 排除模式
+    exclude_patterns:
+      - "**/include/**"
+      - "**/third_party/**"
+
+  python:
+    # coverage --source 参数（被测包名）
+    source: mx_driving
+    # tests/ 下的子目录列表
+    test_dirs:
+      - torch
+      - patcher
+    # 排除的测试文件（glob 模式）
+    exclude_tests: []
+    # 输出格式：html 或 xml
+    format: html
+    # 报告输出目录
+    output_dir: htmlcov
