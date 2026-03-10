@@ -4,6 +4,12 @@
 # 依赖: python3, coverage (pip)
 # 返回: 0=全部通过, 1=有测试失败（覆盖率报告仍会生成）
 
+# 自动修复 Windows 换行符
+if grep -qP '\r$' "$0" 2>/dev/null; then
+    sed -i 's/\r$//' "$0"
+    exec bash "$0" "$@"
+fi
+
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -81,7 +87,10 @@ for test_file in "${TESTS[@]}"; do
     rel_path="${test_file#$TEST_DIR/}"
     echo ">>> 执行 ${rel_path} ..."
 
-    if $PYTHON -m coverage run -p --source="$SOURCE" --branch "$test_file" 2>&1; then
+    # 从测试文件所在目录执行，确保相对 import（如 data_cache）可用
+    test_dir_path="$(dirname "$test_file")"
+    test_basename="$(basename "$test_file")"
+    if (cd "$test_dir_path" && $PYTHON -m coverage run -p --source="$SOURCE" --branch "$test_basename") 2>&1; then
         PASSED=$((PASSED + 1))
     else
         FAILED=$((FAILED + 1))
@@ -90,9 +99,15 @@ for test_file in "${TESTS[@]}"; do
     fi
 done
 
-# 合并覆盖率数据
+# 合并覆盖率数据（从各测试子目录收集 .coverage.* 文件到当前目录）
 echo ""
 echo ">>> 合并覆盖率数据..."
+IFS=',' read -ra COMBINE_DIRS <<< "$SUB_DIRS"
+for d in "${COMBINE_DIRS[@]}"; do
+    sub_path="${TEST_DIR}/${d}"
+    [ -d "$sub_path" ] || continue
+    find "$sub_path" -maxdepth 1 -name '.coverage.*' -exec mv {} . \; 2>/dev/null || true
+done
 $PYTHON -m coverage combine
 $PYTHON -m coverage report -i
 

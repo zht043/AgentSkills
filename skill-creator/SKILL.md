@@ -1,7 +1,6 @@
 ---
 name: skill-creator
 description: 用于创建和提炼新skill的元技能，指导从探索到正式skill的全流程
-type: process
 ---
 
 # Skill开发指南
@@ -28,8 +27,8 @@ skills/<skill-name>/
     *.sh / *.py / *.js
 ```
 
-### Skill Suite
-多个相关子模块共同组成完整能力时，使用 suite 结构。
+### Skill Suite（Skills 集合）
+多个相关子模块共同组成完整能力时，使用 suite（亦称 skills）结构。
 
 ```
 skills/<suite-name>/

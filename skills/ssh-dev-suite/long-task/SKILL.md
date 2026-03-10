@@ -1,7 +1,6 @@
 ---
 name: ssh-dev-suite/long-task
 description: 长耗时任务管理，支持checkpoint记忆、agent休息与恢复
-type: process
 ---
 
 # ssh-long-task

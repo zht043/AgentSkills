@@ -1,6 +1,6 @@
 # container-deploy
 
-DrivingSDK 容器开发环境一键部署工具。支持架构自动检测、多种镜像来源、NPU 设备挂载、容器内 SSH、conda 环境配置和代理设置。
+DrivingSDK 容器开发环境一键部署工具。支持架构自动检测、多种镜像来源、NPU 设备挂载、容器内 SSH、conda 环境配置、代理设置和部署档案生成。
 
 ## 快速开始
 
@@ -10,7 +10,9 @@ DrivingSDK 容器开发环境一键部署工具。支持架构自动检测、多
 
 > "帮我部署一个 DrivingSDK 容器"
 
-Agent 会引导你完成配置：架构检测、镜像选择、容器命名、路径挂载、SSH配置、conda环境、代理设置。
+Agent 会引导你完成配置：**工作空间路径确认、数据集挂载询问**、架构检测、镜像选择、容器命名、路径挂载、SSH配置、conda环境、代理设置。部署完成后自动生成结构化部署档案（Markdown）。
+
+> **重要**：容器一旦创建，挂载路径无法修改。Agent 会在创建前明确询问工作空间和数据集路径。
 
 ### 通过脚本直接使用
 
@@ -54,7 +56,22 @@ bash scripts/deploy-container.sh \
 --torch-version VER    torch 版本（2.1.0/2.6.0/2.7.1），激活对应 conda 环境
 --conda-name NAME      自定义 conda 环境名
 --proxy URL            HTTP/HTTPS 代理地址，持久化到容器 ~/.bashrc
+--registry URL         镜像仓库地址（默认华为 SWR）
 ```
+
+## 部署档案
+
+脚本执行完成后自动生成 `deployment-manifest.md`，包含：
+
+- 宿主机信息（IP、OS、内核、架构）
+- NPU 信息（型号、数量、驱动版本）
+- 容器信息（镜像、OS、磁盘、CANN 版本）
+- SDK 版本链（torch、torch_npu、mx_driving）
+- 服务配置（SSH、代理）
+- VSCode Remote SSH 配置
+- 常用命令速查
+
+档案保存在容器内第一个挂载路径根目录（无挂载则 `/root/`）。
 
 ## 代理配置
 
@@ -84,6 +101,10 @@ Host drivingsdk
 ```
 
 远程服务器场景，配合 ssh-dev-suite 的 tunnel 模块做端口转发。
+
+## 跨平台兼容
+
+从 Windows 传输脚本到 Linux 时，脚本会自动检测并修复 Windows 换行符（`\r\n` → `\n`）。
 
 ## 退出码
 

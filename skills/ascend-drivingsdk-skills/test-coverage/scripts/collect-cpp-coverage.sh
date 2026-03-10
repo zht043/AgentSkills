@@ -4,6 +4,12 @@
 # 依赖: lcov >= 2.0, gcov
 # 返回: 0=成功, 1=无覆盖率数据
 
+# 自动修复 Windows 换行符
+if grep -qP '\r$' "$0" 2>/dev/null; then
+    sed -i 's/\r$//' "$0"
+    exec bash "$0" "$@"
+fi
+
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

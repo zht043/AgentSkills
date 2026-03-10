@@ -1,7 +1,6 @@
 ---
 name: doc-illustrator
 description: 为技术文档生成Mermaid插图，支持模板匹配和LLM自主设计
-type: process
 ---
 
 # doc-illustrator

@@ -34,18 +34,18 @@ graph LR
 
 ## Skill 列表
 
-| Skill | 形态 | 类型 | 说明 |
-|-------|------|------|------|
-| [ssh-dev-suite](skills/ssh-dev-suite/) | suite | 能力型 | SSH远程开发套件 |
-| ┗ [connect](skills/ssh-dev-suite/connect/) | 子模块 | 能力型 | 连接、执行、传输、后台任务 |
-| ┗ [deploy](skills/ssh-dev-suite/deploy/) | 子模块 | 能力型 | 部署与回滚 |
-| ┗ [tunnel](skills/ssh-dev-suite/tunnel/) | 子模块 | 能力型 | 端口转发与代理 |
-| ┗ [debug](skills/ssh-dev-suite/debug/) | 子模块 | 流程型 | 远程排查 |
-| ┗ [long-task](skills/ssh-dev-suite/long-task/) | 子模块 | 流程型 | 长耗时任务管理 |
-| [ascend-drivingsdk-skills](skills/ascend-drivingsdk-skills/) | suite | 能力型 | Ascend NPU DrivingSDK 开发辅助套件 |
-| ┗ [test-coverage](skills/ascend-drivingsdk-skills/test-coverage/) | 子模块 | 能力型 | C++/Python 代码覆盖率收集 |
-| ┗ [container-deploy](skills/ascend-drivingsdk-skills/container-deploy/) | 子模块 | 能力型 | 容器环境一键部署（镜像/NPU/SSH/conda） |
-| [doc-illustrator](skills/doc-illustrator/) | 单体 | 流程型 | 为技术文档生成Mermaid插图 |
+| Skill | 形态 | 说明 |
+|-------|------|------|
+| [ssh-dev-suite](skills/ssh-dev-suite/) | skills | SSH远程开发套件 |
+| ┗ [connect](skills/ssh-dev-suite/connect/) | 子模块 | 连接、执行、传输、后台任务 |
+| ┗ [deploy](skills/ssh-dev-suite/deploy/) | 子模块 | 部署与回滚 |
+| ┗ [tunnel](skills/ssh-dev-suite/tunnel/) | 子模块 | 端口转发与代理 |
+| ┗ [debug](skills/ssh-dev-suite/debug/) | 子模块 | 远程排查 |
+| ┗ [long-task](skills/ssh-dev-suite/long-task/) | 子模块 | 长耗时任务管理 |
+| [ascend-drivingsdk-skills](skills/ascend-drivingsdk-skills/) | skills | Ascend NPU DrivingSDK 开发辅助套件 |
+| ┗ [test-coverage](skills/ascend-drivingsdk-skills/test-coverage/) | 子模块 | C++/Python 代码覆盖率收集 |
+| ┗ [container-deploy](skills/ascend-drivingsdk-skills/container-deploy/) | 子模块 | 容器环境一键部署（镜像/NPU/SSH/conda/部署档案） |
+| [doc-illustrator](skills/doc-illustrator/) | 单体 | 为技术文档生成Mermaid插图 |
 
 ## Skill Creator
 
@@ -69,7 +69,7 @@ graph LR
 ```
 
 - **两种类型**：能力型（封装操作，重心在脚本，SKILL.md ≤ 1KB）/ 流程型（指导方法论，重心在文档，SKILL.md ≤ 3KB）
-- **两种形态**：单体 skill（平铺结构）/ skill suite（子目录分模块 + 共享基础）
+- **两种形态**：单体 skill（平铺结构）/ skill suite / skills（子目录分模块 + 共享基础）
 - **开发流程**：探索（打通能力）→ 提炼（标准化输出）→ 验证发布
 
 详见 [skill-creator/README.md](skill-creator/README.md)。
@@ -94,11 +94,11 @@ graph LR
 skill-creator/                          # Meta skill（开发规范与模板）
 
 skills/
-  ssh-dev-suite/                        # SSH远程开发套件
+  ssh-dev-suite/                        # SSH远程开发套件（skills）
     connect/ deploy/ tunnel/            #   子模块
     debug/ long-task/
     _lib/                               #   共享工具脚本
-  ascend-drivingsdk-skills/             # Ascend NPU DrivingSDK 套件
+  ascend-drivingsdk-skills/             # Ascend NPU DrivingSDK 套件（skills）
     test-coverage/                      #   覆盖率收集
     container-deploy/                   #   容器环境部署
     _lib/                               #   共享工具脚本

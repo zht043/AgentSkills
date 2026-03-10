@@ -55,7 +55,7 @@ agent会直接按模板生成，无需探索阶段。
 | `config.example.yaml` | 配置模板（如需要） |
 | `scripts/*.sh` | 工具脚本（如需要） |
 
-**Skill suite** 生成到 `skills/<suite-name>/`，包含入口 `SKILL.md`（路由表）、`_lib/`（共享脚本）和若干子模块目录，每个子模块结构同单体 skill。
+**Skill suite（skills 集合）** 生成到 `skills/<suite-name>/`，包含入口 `SKILL.md`（路由表）、`_lib/`（共享脚本）和若干子模块目录，每个子模块结构同单体 skill。
 
 ## 注意事项
 

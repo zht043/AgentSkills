@@ -53,3 +53,4 @@ bash scripts/run-py-coverage.sh --test-dir /path/to/tests --source my_package
 - C++ 覆盖率需先以 `COVERAGE=ON` 构建项目
 - Python 覆盖率需安装 `coverage` 包（`pip install coverage`）
 - 报告输出到 `--output-dir` 指定目录，默认 `coverage-report/`
+- 从 Windows 传输脚本时自动修复换行符（`\r\n` → `\n`）

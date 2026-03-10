@@ -1,7 +1,6 @@
 ---
 name: ascend-drivingsdk-skills/test-coverage
 description: C++/Python代码覆盖率收集，支持gcov/lcov和coverage模块
-type: capability
 ---
 
 # test-coverage
@@ -45,6 +44,11 @@ bash scripts/run-py-coverage.sh [--test-dir DIR] [--source PKG] [--format html|x
 
 ## 配置
 参考本目录 `config.example.yaml`，复制为 `config.yaml` 后由 agent 引导填写。
+
+## 跨平台兼容
+- 所有脚本包含 Windows 换行符（`\r\n`）自动修复
+- Python 测试从测试文件所在目录执行（确保 `data_cache` 等相对 import 可用）
+- 覆盖率数据文件（`.coverage.*`）从各测试子目录收集到项目根目录后合并
 
 ## Token约束
 - 覆盖率报告：只读 summary 行，不读完整 HTML

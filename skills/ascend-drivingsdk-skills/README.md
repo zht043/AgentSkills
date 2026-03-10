@@ -1,13 +1,13 @@
 # ascend-drivingsdk-skills
 
-Ascend NPU [DrivingSDK](https://gitcode.com/Ascend/DrivingSDK) 开发辅助 skill 套件。
+Ascend NPU [DrivingSDK](https://gitcode.com/Ascend/DrivingSDK) 开发辅助 skill 集合（skills）。
 
 ## Skill 列表
 
 | Skill | 功能 |
 |-------|------|
 | [test-coverage](test-coverage/) | C++/Python 代码覆盖率收集（gcov/lcov + coverage 模块） |
-| [container-deploy](container-deploy/) | 容器环境一键部署（镜像管理、NPU设备挂载、SSH、conda） |
+| [container-deploy](container-deploy/) | 容器环境一键部署（镜像管理、NPU设备挂载、SSH、conda、部署档案） |
 
 ## 前置条件
 

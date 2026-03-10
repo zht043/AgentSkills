@@ -1,7 +1,6 @@
 ---
 name: ssh-dev-suite/deploy
 description: 本地项目部署到远程服务器，支持增量同步、部署钩子、回滚
-type: capability
 ---
 
 # ssh-deploy

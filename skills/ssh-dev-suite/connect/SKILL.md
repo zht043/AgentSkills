@@ -1,7 +1,6 @@
 ---
 name: ssh-dev-suite/connect
 description: SSH连接管理、远程命令执行、文件传输、后台任务
-type: capability
 ---
 
 # ssh-connect

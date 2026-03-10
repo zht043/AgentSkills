@@ -4,6 +4,12 @@
 # 用法：bash deploy-container.sh [options]
 # 退出码：0=成功, 1=参数/系统错误, 2=镜像拉取失败（需用户介入）
 
+# 自动修复 Windows 换行符（从 Windows 传输脚本时常见问题）
+if grep -qP '\r$' "$0" 2>/dev/null; then
+    sed -i 's/\r$//' "$0"
+    exec bash "$0" "$@"
+fi
+
 set -euo pipefail
 
 # ========== 默认值 ==========
@@ -274,11 +280,7 @@ if [ -n "$TORCH_VERSION" ] && [ -n "$CONDA_SH" ]; then
     fi
 fi
 
-# ========== 打印环境信息 ==========
-echo ""
-echo "=========================================="
-echo "  DrivingSDK 容器环境信息"
-echo "=========================================="
+# ========== 收集环境信息 ==========
 
 # 确定要激活的环境
 if [ -n "$CONDA_NAME" ]; then
@@ -294,28 +296,27 @@ else
     ACTIVATE_ENV=""
 fi
 
-# CANN 版本
-echo ""
-echo "--- CANN ---"
-dexec "cat /usr/local/Ascend/ascend-toolkit/latest/version.cfg 2>/dev/null \
+# 收集宿主机信息
+HOST_IP=$(hostname -I 2>/dev/null | awk '{print $1}' || hostname)
+HOST_OS=$(cat /etc/os-release 2>/dev/null | grep PRETTY_NAME | cut -d'"' -f2 || uname -s)
+HOST_KERNEL=$(uname -r)
+HOST_ARCH=$(uname -m)
+DEPLOY_TIME=$(date '+%Y-%m-%d %H:%M:%S')
+
+# 收集 NPU 信息
+NPU_COUNT=$(ls /dev/davinci[0-9]* 2>/dev/null | wc -l)
+NPU_DRIVER=$(cat /usr/local/Ascend/driver/version.info 2>/dev/null | grep -oP 'Version=\K.*' || echo "未知")
+NPU_MODEL=$(npu-smi info 2>/dev/null | grep -oP 'Ascend\S+' | head -1 || echo "未知")
+
+# 收集容器内信息
+CANN_VERSION=$(dexec "cat /usr/local/Ascend/ascend-toolkit/latest/version.cfg 2>/dev/null \
     || cat /usr/local/Ascend/ascend-toolkit/latest/version.info 2>/dev/null \
     || find /usr/local/Ascend -maxdepth 3 -name 'version.info' -path '*/compiler/*' -exec grep 'Version=' {} \; 2>/dev/null \
-    || echo '未找到 CANN'"
+    || echo '未找到'")
 
-# conda 环境列表
-echo ""
-echo "--- Conda 环境 ---"
-if [ -n "$CONDA_SH" ]; then
-    dexec "source $CONDA_SH && conda env list"
-else
-    echo "未检测到 conda"
-fi
-
-# torch / torch_npu / mx_driving 版本
+SDK_VERSIONS=""
 if [ -n "$ACTIVATE_ENV" ] && [ -n "$CONDA_SH" ]; then
-    echo ""
-    echo "--- 当前环境: $ACTIVATE_ENV ---"
-    dexec "source $CONDA_SH && conda activate $ACTIVATE_ENV && python -c \"
+    SDK_VERSIONS=$(dexec "source $CONDA_SH && conda activate $ACTIVATE_ENV && python -c \"
 import torch; print(f'torch: {torch.__version__}')
 try:
     import torch_npu; print(f'torch_npu: {torch_npu.__version__}')
@@ -323,30 +324,169 @@ except: print('torch_npu: 未安装')
 try:
     import mx_driving; print(f'mx_driving: {mx_driving.__version__}')
 except: print('mx_driving: 未安装')
-\""
+\"" 2>/dev/null)
 fi
 
-# SSH 连接信息
-if [ -n "$SSH_PORT" ]; then
-    HOSTNAME=$(hostname -I 2>/dev/null | awk '{print $1}' || hostname)
-    echo ""
-    echo "--- SSH 连接 ---"
-    echo "ssh root@${HOSTNAME} -p ${SSH_PORT}"
-    echo ""
-    echo "VSCode Remote SSH 配置:"
-    echo "  Host drivingsdk-${CONTAINER_NAME}"
-    echo "      HostName ${HOSTNAME}"
-    echo "      Port ${SSH_PORT}"
-    echo "      User root"
+PYTHON_VERSION=""
+if [ -n "$ACTIVATE_ENV" ] && [ -n "$CONDA_SH" ]; then
+    PYTHON_VERSION=$(dexec "source $CONDA_SH && conda activate $ACTIVATE_ENV && python --version 2>&1" | head -1)
 fi
 
-# 代理信息
-if [ -n "$PROXY_URL" ]; then
-    echo ""
-    echo "--- 代理 ---"
-    echo "http_proxy=$PROXY_URL"
-    echo "代理已持久化到容器 ~/.bashrc"
+CONDA_ENVS=""
+if [ -n "$CONDA_SH" ]; then
+    CONDA_ENVS=$(dexec "source $CONDA_SH && conda env list" 2>/dev/null)
 fi
+
+# 构建挂载列表
+MOUNT_LIST=""
+for m in "${MOUNTS[@]}"; do
+    host_path="${m%%:*}"
+    container_path="${m#*:}"
+    MOUNT_LIST="${MOUNT_LIST}| \`${host_path}\` | \`${container_path}\` |
+"
+done
+
+# ========== 生成部署档案 ==========
+
+# 收集容器内 CANN set_env.sh 路径
+CANN_SET_ENV=$(dexec "find /usr/local/Ascend -maxdepth 2 -name 'set_env.sh' -path '*/ascend-toolkit/*' 2>/dev/null | head -1" || echo "/usr/local/Ascend/ascend-toolkit/set_env.sh")
+[ -z "$CANN_SET_ENV" ] && CANN_SET_ENV="/usr/local/Ascend/ascend-toolkit/set_env.sh"
+
+# 收集容器内 OS 信息
+CONTAINER_OS=$(dexec "cat /etc/os-release 2>/dev/null | grep PRETTY_NAME | cut -d'\"' -f2 || echo '未知'" 2>/dev/null)
+
+# 收集磁盘使用
+DISK_USAGE=$(dexec "df -h / 2>/dev/null | tail -1 | awk '{print \$3\"/\"\$2\" (\"\$5\" used)\"}'" 2>/dev/null || echo "未知")
+
+MANIFEST=$(cat <<MANIFEST_EOF
+# DrivingSDK Deployment Manifest
+
+> 自动生成于 ${DEPLOY_TIME}
+
+## 宿主机
+
+| 项目 | 值 |
+|------|-----|
+| IP | \`${HOST_IP}\` |
+| 操作系统 | ${HOST_OS} |
+| 内核 | ${HOST_KERNEL} |
+| 架构 | ${HOST_ARCH} |
+
+## NPU
+
+| 项目 | 值 |
+|------|-----|
+| 型号 | ${NPU_MODEL} |
+| 数量 | ${NPU_COUNT} |
+| 驱动版本 | ${NPU_DRIVER} |
+
+## 容器
+
+| 项目 | 值 |
+|------|-----|
+| 镜像 | \`${IMAGE}\` |
+| 容器名 | \`${CONTAINER_NAME}\` |
+| 容器 OS | ${CONTAINER_OS} |
+| 磁盘使用 | ${DISK_USAGE} |
+| 进入方式 | \`docker exec -it ${CONTAINER_NAME} bash\` |
+
+### 挂载路径
+
+| 宿主机路径 | 容器路径 |
+|------------|----------|
+${MOUNT_LIST}
+
+### 服务配置
+
+| 项目 | 值 |
+|------|-----|
+| SSH 端口 | ${SSH_PORT:-未配置} |
+| SSH 连接 | ${SSH_PORT:+\`ssh root@${HOST_IP} -p ${SSH_PORT}\`} |
+| HTTP 代理 | ${PROXY_URL:-未配置} |
+
+${SSH_PORT:+### VSCode Remote SSH}
+${SSH_PORT:+\`\`\`}
+${SSH_PORT:+Host drivingsdk-${CONTAINER_NAME}}
+${SSH_PORT:+    HostName ${HOST_IP}}
+${SSH_PORT:+    Port ${SSH_PORT}}
+${SSH_PORT:+    User root}
+${SSH_PORT:+\`\`\`}
+
+## 开发环境
+
+| 项目 | 值 |
+|------|-----|
+| Conda 环境 | \`${ACTIVATE_ENV:-未指定}\` |
+| Python | ${PYTHON_VERSION:-未知} |
+| CANN | ${CANN_VERSION} |
+
+### SDK 版本链
+\`\`\`
+${SDK_VERSIONS:-未检测}
+\`\`\`
+
+### Conda 环境列表
+\`\`\`
+${CONDA_ENVS:-未检测到 conda}
+\`\`\`
+
+## 常用命令速查
+
+\`\`\`bash
+# 进入容器
+docker exec -it ${CONTAINER_NAME} bash
+
+# 激活开发环境
+source ${CANN_SET_ENV}
+source ${CONDA_SH:-/opt/conda/etc/profile.d/conda.sh}
+conda activate ${ACTIVATE_ENV:-base}
+
+# 查看 NPU 状态
+npu-smi info
+
+# 构建项目（普通）
+cd /workspace/DrivingSDK_DT
+bash ci/build.sh --python=3.8
+
+# 构建项目（覆盖率模式）
+bash ci/build.sh --python=3.8 --coverage
+
+# 运行测试
+cd tests/torch && python -m pytest test_xxx.py -v
+
+# 安装 wheel
+pip install dist/*.whl --force-reinstall --no-deps
+
+# 容器管理
+docker start ${CONTAINER_NAME}   # 启动
+docker stop ${CONTAINER_NAME}    # 停止
+docker rm -f ${CONTAINER_NAME}   # 删除
+\`\`\`
+MANIFEST_EOF
+)
+
+# 打印到控制台
+echo ""
+echo "=========================================="
+echo "  DrivingSDK 部署档案"
+echo "=========================================="
+echo "$MANIFEST"
+
+# 保存到容器内（第一个挂载路径的容器侧根目录）
+MANIFEST_PATH=""
+if [ ${#MOUNTS[@]} -gt 0 ]; then
+    first_mount="${MOUNTS[0]}"
+    container_mount_path="${first_mount#*:}"
+    MANIFEST_PATH="${container_mount_path}/deployment-manifest.md"
+else
+    MANIFEST_PATH="/root/deployment-manifest.md"
+fi
+
+docker exec "$CONTAINER_NAME" bash -c "cat > '$MANIFEST_PATH' << 'INNEREOF'
+${MANIFEST}
+INNEREOF"
+echo ""
+echo "部署档案已保存: 容器内 ${MANIFEST_PATH}"
 
 echo ""
 echo "=========================================="
