@@ -36,7 +36,12 @@ done
 [ -z "$TEST_DIR" ] && TEST_DIR=$(resolve_project_root)/tests
 [ -z "$SOURCE" ] && SOURCE=$(read_config_value "source" 2>/dev/null || echo "mx_driving")
 [ -z "$FORMAT" ] && FORMAT=$(read_config_value "format" 2>/dev/null || echo "html")
-[ -z "$SUB_DIRS" ] && SUB_DIRS="torch,patcher"
+[ -z "$SUB_DIRS" ] && SUB_DIRS=$(read_config_list "test_dirs" 2>/dev/null || echo "")
+
+if [ -z "$SUB_DIRS" ]; then
+    echo "错误: 未指定测试子目录。请通过 --sub-dirs 参数或在 config.yaml 的 test_dirs 字段配置" >&2
+    exit 1
+fi
 
 ensure_tool python3 "请安装 Python 3" || ensure_tool python "请安装 Python 3"
 PYTHON=$(command -v python3 2>/dev/null || command -v python)
