@@ -46,14 +46,16 @@ agent会直接按模板生成，无需探索阶段。
 
 ## 产出物
 
-每个skill会生成到 `skills/<skill-name>/` 目录：
+**单体 skill** 生成到 `skills/<skill-name>/`：
 
 | 文件 | 说明 |
 |------|------|
 | `SKILL.md` | 核心文档，agent读取并执行 |
 | `README.md` | 使用说明，面向用户 |
 | `config.example.yaml` | 配置模板（如需要） |
-| `*.sh / *.py / *.js` | 工具脚本（如需要） |
+| `scripts/*.sh` | 工具脚本（如需要） |
+
+**Skill suite** 生成到 `skills/<suite-name>/`，包含入口 `SKILL.md`（路由表）、`_lib/`（共享脚本）和若干子模块目录，每个子模块结构同单体 skill。
 
 ## 注意事项
 

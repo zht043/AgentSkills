@@ -42,6 +42,9 @@ graph LR
 | ┗ [tunnel](skills/ssh-dev-suite/tunnel/) | 子模块 | 能力型 | 端口转发与代理 |
 | ┗ [debug](skills/ssh-dev-suite/debug/) | 子模块 | 流程型 | 远程排查 |
 | ┗ [long-task](skills/ssh-dev-suite/long-task/) | 子模块 | 流程型 | 长耗时任务管理 |
+| [ascend-drivingsdk-skills](skills/ascend-drivingsdk-skills/) | suite | 能力型 | Ascend NPU DrivingSDK 开发辅助套件 |
+| ┗ [test-coverage](skills/ascend-drivingsdk-skills/test-coverage/) | 子模块 | 能力型 | C++/Python 代码覆盖率收集 |
+| ┗ [container-deploy](skills/ascend-drivingsdk-skills/container-deploy/) | 子模块 | 能力型 | 容器环境一键部署（镜像/NPU/SSH/conda） |
 | [doc-illustrator](skills/doc-illustrator/) | 单体 | 流程型 | 为技术文档生成Mermaid插图 |
 
 ## Skill Creator
@@ -88,12 +91,18 @@ graph LR
 ## 目录结构
 
 ```
-skill-creator/               # Meta skill（开发规范与模板）
+skill-creator/                          # Meta skill（开发规范与模板）
 
-skills/<skill-name>/          # 单体 skill（SKILL.md + README.md + scripts/）
-skills/<suite-name>/          # Skill suite（入口文档 + _lib/ + 子模块目录）
-  _lib/                       #   共享工具脚本
-  <module>/                   #   子模块（SKILL.md + scripts/）
+skills/
+  ssh-dev-suite/                        # SSH远程开发套件
+    connect/ deploy/ tunnel/            #   子模块
+    debug/ long-task/
+    _lib/                               #   共享工具脚本
+  ascend-drivingsdk-skills/             # Ascend NPU DrivingSDK 套件
+    test-coverage/                      #   覆盖率收集
+    container-deploy/                   #   容器环境部署
+    _lib/                               #   共享工具脚本
+  doc-illustrator/                      # 文档插图生成
 
-docs/plans/                   # 设计与计划文档
+docs/plans/                             # 设计与计划文档
 ```
