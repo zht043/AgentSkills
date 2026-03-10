@@ -149,8 +149,8 @@ DOCKER_CMD=(docker run -d
     --name "$CONTAINER_NAME"
 )
 
-# NPU 设备挂载（仅挂载实际存在的设备）
-for i in $(seq 0 7); do
+# NPU 设备挂载（仅挂载实际存在的设备，支持多卡场景 davinci0-15）
+for i in $(seq 0 15); do
     if [ -e "/dev/davinci${i}" ]; then
         DOCKER_CMD+=(--device="/dev/davinci${i}")
     fi
@@ -199,7 +199,7 @@ if [ -n "$SSH_PORT" ]; then
     echo "配置容器内 SSH（端口: $SSH_PORT）..."
 
     # 安装 openssh-server（如未安装）
-    dexec "command -v sshd >/dev/null 2>&1 || (yum install -y openssh-server 2>/dev/null || apt-get update && apt-get install -y openssh-server 2>/dev/null)"
+    dexec "command -v sshd >/dev/null 2>&1 || { yum install -y openssh-server 2>/dev/null || { apt-get update -o Acquire::Check-Valid-Until=false 2>/dev/null; apt-get install -y openssh-server 2>/dev/null; } || echo '警告: openssh-server 安装失败，请手动安装'; }"
 
     # 生成 host keys（如缺失）
     dexec "ssh-keygen -A 2>/dev/null || true"
@@ -221,7 +221,15 @@ if [ -n "$SSH_PORT" ]; then
 fi
 
 # ========== 配置 conda 环境 ==========
-if [ -n "$TORCH_VERSION" ]; then
+# 自动检测容器内 conda 路径（排除 pkgs 缓存目录）
+CONDA_SH=$(docker exec "$CONTAINER_NAME" bash -c "find /opt /root /home -path '*/pkgs/*' -prune -o -path '*/etc/profile.d/conda.sh' -print 2>/dev/null | head -1")
+if [ -z "$CONDA_SH" ]; then
+    echo "警告: 未检测到 conda，跳过 conda 配置"
+else
+    echo "检测到 conda: $CONDA_SH"
+fi
+
+if [ -n "$TORCH_VERSION" ] && [ -n "$CONDA_SH" ]; then
     echo "配置 conda 环境（torch ${TORCH_VERSION}）..."
 
     # 确定源环境名
@@ -235,7 +243,7 @@ if [ -n "$TORCH_VERSION" ]; then
     if [ -n "$SRC_ENV" ] && [ -n "$CONDA_NAME" ]; then
         # rename 环境: 先 clone 再删除原环境（兼容性更好）
         echo "重命名 conda 环境: $SRC_ENV → $CONDA_NAME"
-        dexec "source /root/miniconda3/etc/profile.d/conda.sh && conda create -n $CONDA_NAME --clone $SRC_ENV -y && conda remove -n $SRC_ENV --all -y"
+        dexec "source $CONDA_SH && conda create -n $CONDA_NAME --clone $SRC_ENV -y && conda remove -n $SRC_ENV --all -y"
 
         # 设为默认激活环境
         dexec "echo 'conda activate $CONDA_NAME' >> /root/.bashrc"
@@ -275,13 +283,17 @@ dexec "cat /usr/local/Ascend/ascend-toolkit/latest/version.cfg 2>/dev/null || ec
 # conda 环境列表
 echo ""
 echo "--- Conda 环境 ---"
-dexec "source /root/miniconda3/etc/profile.d/conda.sh && conda env list"
+if [ -n "$CONDA_SH" ]; then
+    dexec "source $CONDA_SH && conda env list"
+else
+    echo "未检测到 conda"
+fi
 
 # torch / torch_npu / mx_driving 版本
-if [ -n "$ACTIVATE_ENV" ]; then
+if [ -n "$ACTIVATE_ENV" ] && [ -n "$CONDA_SH" ]; then
     echo ""
     echo "--- 当前环境: $ACTIVATE_ENV ---"
-    dexec "source /root/miniconda3/etc/profile.d/conda.sh && conda activate $ACTIVATE_ENV && python -c \"
+    dexec "source $CONDA_SH && conda activate $ACTIVATE_ENV && python -c \"
 import torch; print(f'torch: {torch.__version__}')
 try:
     import torch_npu; print(f'torch_npu: {torch_npu.__version__}')
