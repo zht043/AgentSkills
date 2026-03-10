@@ -1,6 +1,6 @@
 # container-deploy
 
-DrivingSDK 容器开发环境一键部署工具。支持架构自动检测、多种镜像来源、NPU 设备挂载、容器内 SSH、conda 环境配置、代理设置和部署档案生成。
+DrivingSDK 容器开发环境一键部署工具。支持架构和 OS 自动检测、多种镜像来源、NPU 设备挂载、容器内 SSH、conda 环境配置、代理设置和部署档案生成。
 
 ## 快速开始
 
@@ -10,7 +10,7 @@ DrivingSDK 容器开发环境一键部署工具。支持架构自动检测、多
 
 > "帮我部署一个 DrivingSDK 容器"
 
-Agent 会引导你完成配置：**工作空间路径确认、数据集挂载询问**、架构检测、镜像选择、容器命名、路径挂载、SSH配置、conda环境、代理设置。部署完成后自动生成结构化部署档案（Markdown）。
+Agent 会一次性收集所有配置：**环境检测（架构+OS）、镜像选择（三选一平等呈现）、工作空间路径、数据集挂载、容器命名、SSH配置、代理设置**。容器创建后再列出可用 conda 环境让你选择。部署完成后自动生成结构化部署档案。
 
 > **重要**：容器一旦创建，挂载路径无法修改。Agent 会在创建前明确询问工作空间和数据集路径。
 
@@ -18,24 +18,25 @@ Agent 会引导你完成配置：**工作空间路径确认、数据集挂载询
 
 ```bash
 bash scripts/deploy-container.sh \
-  --image-tag "8.5.0_alpha001" \
+  --image "已有镜像名:tag" \
   --container-name "my_drivingsdk" \
   --mount "/data/datasets:/datasets" \
   --mount "/home/user/workspace:/workspace" \
   --ssh-port 2222 \
   --root-password "mypassword" \
-  --torch-version "2.1.0" \
-  --conda-name "dev" \
+  --conda-env "py310_mmcv1" \
   --proxy "http://127.0.0.1:7897"
 ```
 
 ### 镜像来源（三选一）
 
+Agent 交互模式下平等呈现三种来源，无优先级。镜像需匹配宿主机 OS 和架构。
+
 | 参数 | 说明 |
 |------|------|
-| `--image-tag` | 从 config 中的 registry 拉取，自动拼接架构后缀 |
-| `--image` | 指定完整镜像地址（自有 registry 或本地已有镜像） |
+| `--image` | 指定完整镜像地址（宿主机已有镜像或自有 registry） |
 | `--image-file` | 从本地 `.tar` 文件 docker load |
+| `--image-tag` | 从 config 中的 registry 拉取，自动拼接架构后缀 |
 
 ### 架构检测
 
@@ -53,8 +54,10 @@ bash scripts/deploy-container.sh \
 --ssh-port PORT        容器内 SSH 端口（--network=host 下绑宿主机端口）
 --expose PORT          额外暴露端口，可多次指定
 --root-password PASS   容器 root 密码（SSH 登录用）
---torch-version VER    torch 版本（2.1.0/2.6.0/2.7.1），激活对应 conda 环境
---conda-name NAME      自定义 conda 环境名
+--conda-env NAME       要激活的 conda 环境名（动态检测容器内可用环境）
+--conda-name NAME      自定义 conda 环境名（配合 --conda-env 重命名）
+--list-conda-envs      列出容器内可用 conda 环境并退出
+--torch-version VER    [弃用] 旧参数，映射到 --conda-env
 --proxy URL            HTTP/HTTPS 代理地址，持久化到容器 ~/.bashrc
 --registry URL         镜像仓库地址（默认华为 SWR）
 ```
@@ -78,8 +81,8 @@ bash scripts/deploy-container.sh \
 容器使用 `--network=host` 共享宿主机网络栈。通过 `--proxy` 参数配置代理，自动写入容器 `~/.bashrc`：
 
 ```bash
-# 配合 ssh-dev-suite 反向代理隧道
-bash ssh-tunnel.sh proxy <profile> --local-proxy-port 7897
+# 配合 SSH 隧道/反向代理工具（在可用 skill 中寻找）
+# 建立反向代理隧道，将本地代理端口转发到远程宿主机
 
 # 部署时指定代理
 bash scripts/deploy-container.sh --proxy "http://127.0.0.1:7897" ...
@@ -100,11 +103,12 @@ Host drivingsdk
     User root
 ```
 
-远程服务器场景，配合 ssh-dev-suite 的 tunnel 模块做端口转发。
+远程服务器场景，需配合具备 SSH 隧道/端口转发能力的工具做端口转发。
 
 ## 跨平台兼容
 
-从 Windows 传输脚本到 Linux 时，脚本会自动检测并修复 Windows 换行符（`\r\n` → `\n`）。
+- 从 Windows 传输脚本到 Linux 时，脚本会自动检测并修复 Windows 换行符（`\r\n` → `\n`）
+- 若自修复失败（bash 无法解析到修复代码），应在传输前先修复换行符：`sed 's/\r$//' script.sh > script.fixed.sh`
 
 ## 退出码
 

@@ -12,17 +12,8 @@ images:
     # - tag: "x.y.z"
     #   archs: ["arm64", "x86_64"]
 
-conda_envs:
-  - name: "torch2.1.0_py38"
-    torch: "2.1.0"
-    python: "3.8"
-  - name: "torch2.6.0_py310"
-    torch: "2.6.0"
-    python: "3.10"
-  - name: "torch2.7.1_py310"
-    torch: "2.7.1"
-    python: "3.10"
+# conda 环境由脚本动态检测容器内实际可用的 conda 环境
+# 不再硬编码环境名，使用 --list-conda-envs 查看或 --conda-env 指定
 
 defaults:
   ssh_port: 2222
-  python: "3.8"

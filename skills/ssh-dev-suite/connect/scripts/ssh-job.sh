@@ -30,8 +30,10 @@ case "$ACTION" in
         JOB_ID="job-$(date +%Y%m%d-%H%M%S)-$$"
         JOB_DIR="~/.ssh-jobs/$JOB_ID"
 
-        run_remote "$PROFILE" "mkdir -p $JOB_DIR && echo '$COMMAND' > $JOB_DIR/cmd.txt"
-        run_remote "$PROFILE" "nohup bash -c '$COMMAND' > $JOB_DIR/stdout.log 2> $JOB_DIR/stderr.log & echo \$! > $JOB_DIR/pid.txt && wait \$! 2>/dev/null; echo \$? > $JOB_DIR/exit_code.txt" &
+        # 使用 base64 编码传递命令，避免引号嵌套问题
+        ENCODED_CMD=$(printf '%s' "$COMMAND" | base64 -w0 2>/dev/null || printf '%s' "$COMMAND" | base64)
+        run_remote "$PROFILE" "mkdir -p $JOB_DIR && echo '$ENCODED_CMD' | base64 -d > $JOB_DIR/cmd.txt"
+        run_remote "$PROFILE" "nohup bash -c \"\$(echo '$ENCODED_CMD' | base64 -d)\" > $JOB_DIR/stdout.log 2> $JOB_DIR/stderr.log & echo \$! > $JOB_DIR/pid.txt && wait \$! 2>/dev/null; echo \$? > $JOB_DIR/exit_code.txt" &
         disown
 
         echo "任务已启动: $JOB_ID"

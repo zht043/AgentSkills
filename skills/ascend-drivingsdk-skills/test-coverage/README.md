@@ -42,7 +42,7 @@ bash scripts/run-py-coverage.sh --test-dir /path/to/tests --source my_package
    MMCV_WITH_OPS=1 FORCE_NPU=1 python setup.py develop
    ```
 
-> 无外网环境可通过 ssh-dev-suite 的反向代理隧道配置代理访问。
+> 无外网环境可通过反向代理隧道配置代理访问（在可用 skill 中寻找提供 SSH 隧道/反向代理功能的工具）。
 
 ## 配置
 

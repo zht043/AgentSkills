@@ -13,7 +13,7 @@ Ascend NPU [DrivingSDK](https://gitcode.com/Ascend/DrivingSDK) 开发辅助 skil
 
 - 宿主机已安装昇腾 NPU 驱动（`/usr/local/Ascend/driver` 存在）
 - 宿主机已安装 Docker
-- 远程场景通过 [ssh-dev-suite](../ssh-dev-suite/) 连接
+- 远程场景需要 SSH 远程连接能力（在可用 skill 中寻找提供 SSH 连接、隧道等功能的工具）
 
 ## 共享库
 

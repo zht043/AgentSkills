@@ -31,13 +31,37 @@ description: AI Agent 技能库项目规范，指导 agent 正确阅读和使用
 
 2. **单体 skill**：SKILL.md + scripts/ 目录下的脚本都需要读取
 
-3. **跨 skill 引用**：当 skill A 引用了 skill B（如 container-deploy 引用 ssh-dev-suite 的反向代理），agent 也应读取被引用的 skill B 的相关子模块文档
+3. **能力依赖发现**：当 skill 描述中提到需要某种能力（如"需要 SSH 隧道能力"、"需要反向代理"），agent 应在本项目 `skills/` 目录下扫描可用 skill，找到能提供该能力的 skill 并读取其文档。参见下方"能力索引"
+
+### 能力索引
+
+当 skill 描述中提到需要以下能力时，优先在 `skills/` 目录下寻找匹配的 skill：
+
+| 能力需求 | 匹配 skill 目录 | 说明 |
+|----------|-----------------|------|
+| SSH 远程连接/执行 | `ssh-dev-suite/connect/` | 多 profile 连接管理、远程命令执行、文件传输 |
+| SSH 隧道/端口转发/反向代理 | `ssh-dev-suite/tunnel/` | 端口转发、代理隧道 |
+| 远程部署/同步 | `ssh-dev-suite/deploy/` | 项目同步、部署钩子、回滚 |
+| 远程调试/排查 | `ssh-dev-suite/debug/` | 远程问题排查 |
+| 长耗时远程任务 | `ssh-dev-suite/long-task/` | 断连恢复、checkpoint 管理 |
+
+> **注意**：此索引仅对本项目 skills/ 目录生效。skill 文档本身不直接引用其他 skill 名称，以保持独立可移植性。当 skill 被拷贝到其他项目使用时，用户需根据自己环境的可用工具替换上述映射。
+
+### SSH 远程开发规范
+
+当 agent 需要通过 SSH 连接远程服务器执行操作时（无论是用户直接要求还是其他 skill 提到需要远程能力），**必须**：
+
+1. 先检查 `skills/` 下是否有提供 SSH 能力的 skill（本项目为 `ssh-dev-suite`）
+2. 读取该 skill 的完整文档树（入口 SKILL.md + 相关子模块 SKILL.md + 脚本）
+3. 按其规范的 profile 管理、ControlMaster 会话复用、容器感知等机制操作
+4. **不要自行拼接裸 ssh/scp 命令**，应使用 SSH skill 提供的脚本和流程
 
 ### 常见错误
 
 - ❌ 只读了 suite 的入口 SKILL.md，跳过了子模块的 SKILL.md
 - ❌ 读了 SKILL.md 但没读脚本，不了解参数和退出码
-- ❌ 看到"参考 xxx skill"但没有去读对应的 skill 文档
+- ❌ skill 提到需要某种能力但没有在 skills/ 下寻找匹配工具
+- ❌ 有可用的 SSH skill 却自行拼接裸 ssh/scp 命令
 - ❌ 没有读 config.example.yaml，不了解可配置项
 - ❌ 在交互流程中自作主张跳过了 skill 规定的步骤（如 workspace 路径询问、数据集挂载询问）
 - ❌ 自行决定了本应询问用户的配置（如服务器上的工作目录路径）
@@ -48,7 +72,7 @@ Agent 读取完 skill 后，应能回答以下问题：
 - 这个 skill 有哪些子模块？每个子模块做什么？
 - 脚本有哪些参数？哪些必填？退出码含义？
 - 交互流程有哪些阶段？每个阶段问什么？
-- 有哪些跨 skill 的依赖？
+- 需要哪些外部能力？本项目 skills/ 下有匹配工具吗？
 
 如果无法回答，说明阅读不够深入。
 

@@ -21,12 +21,13 @@ RUNTIME=$(echo "$CONFIG_JSON" | $PYTHON -c "import sys,json; print(json.load(sys
 
 mkdir -p ~/.ssh/sockets
 
-# 容器场景：包装命令
+# 容器场景：包装命令（使用 printf %q 安全转义，避免引号嵌套问题）
 if [ -n "$CONTAINER" ]; then
+    ESCAPED_CMD=$(printf '%q' "$COMMAND")
     if [ "$RUNTIME" = "kubectl" ]; then
-        COMMAND="kubectl exec -i $CONTAINER -- bash -c '$COMMAND'"
+        COMMAND="kubectl exec -i $CONTAINER -- bash -c $ESCAPED_CMD"
     else
-        COMMAND="docker exec -i $CONTAINER bash -c '$COMMAND'"
+        COMMAND="docker exec -i $CONTAINER bash -c $ESCAPED_CMD"
     fi
 fi
 

@@ -22,10 +22,11 @@ MOUNTS=()
 SSH_PORT=""
 EXPOSE_PORTS=()
 ROOT_PASSWORD=""
-TORCH_VERSION=""
+CONDA_ENV=""
 CONDA_NAME=""
 PROXY_URL=""
 REGISTRY="swr.cn-south-1.myhuaweicloud.com/ascendhub/drivingsdk"
+LIST_CONDA=false
 
 # ========== 参数解析 ==========
 usage() {
@@ -46,8 +47,10 @@ usage() {
   --root-password <pwd>      容器 root 密码
 
 环境配置:
-  --torch-version <ver>      torch 版本（2.1.0/2.6.0/2.7.1），可选
-  --conda-name <name>        conda 环境自定义名称（需配合 --torch-version）
+  --conda-env <name>         要激活的 conda 环境名（由容器内实际环境决定）
+  --conda-name <name>        conda 环境自定义名称（配合 --conda-env 重命名）
+  --list-conda-envs          创建容器后列出可用 conda 环境并退出
+  --torch-version <ver>      [弃用] 旧版参数，映射到 --conda-env
   --proxy <url>              HTTP 代理地址（如 http://127.0.0.1:7897），持久化到容器
   --registry <url>           镜像仓库地址（默认华为 SWR）
 USAGE
@@ -65,7 +68,18 @@ while [[ $# -gt 0 ]]; do
         --ssh-port)     SSH_PORT="$2"; shift 2 ;;
         --expose)       EXPOSE_PORTS+=("$2"); shift 2 ;;
         --root-password) ROOT_PASSWORD="$2"; shift 2 ;;
-        --torch-version) TORCH_VERSION="$2"; shift 2 ;;
+        --torch-version)
+            echo "警告: --torch-version 已弃用，请使用 --conda-env 直接指定环境名" >&2
+            # 弃用兼容：映射旧版 torch 版本到环境名
+            case "$2" in
+                2.1.0) CONDA_ENV="torch2.1.0_py38" ;;
+                2.6.0) CONDA_ENV="torch2.6.0_py310" ;;
+                2.7.1) CONDA_ENV="torch2.7.1_py310" ;;
+                *)     CONDA_ENV="$2" ;;
+            esac
+            shift 2 ;;
+        --conda-env)    CONDA_ENV="$2"; shift 2 ;;
+        --list-conda-envs) LIST_CONDA=true; shift ;;
         --conda-name)   CONDA_NAME="$2"; shift 2 ;;
         --proxy)        PROXY_URL="$2"; shift 2 ;;
         --registry)     REGISTRY="$2"; shift 2 ;;
@@ -254,29 +268,36 @@ else
     echo "检测到 conda: $CONDA_SH"
 fi
 
-if [ -n "$TORCH_VERSION" ] && [ -n "$CONDA_SH" ]; then
-    echo "配置 conda 环境（torch ${TORCH_VERSION}）..."
+# ========== 列出 conda 环境（--list-conda-envs 模式）==========
+if [ "$LIST_CONDA" = true ] && [ -n "$CONDA_SH" ]; then
+    echo "容器内可用 conda 环境:"
+    dexec "source $CONDA_SH && conda env list" 2>/dev/null
+    exit 0
+elif [ "$LIST_CONDA" = true ]; then
+    echo "警告: 未检测到 conda" >&2
+    exit 1
+fi
 
-    # 确定源环境名
-    case "$TORCH_VERSION" in
-        2.1.0) SRC_ENV="torch2.1.0_py38" ;;
-        2.6.0) SRC_ENV="torch2.6.0_py310" ;;
-        2.7.1) SRC_ENV="torch2.7.1_py310" ;;
-        *)     echo "警告: 未知 torch 版本 $TORCH_VERSION，跳过 conda 配置" >&2; SRC_ENV="" ;;
-    esac
+if [ -n "$CONDA_ENV" ] && [ -n "$CONDA_SH" ]; then
+    echo "配置 conda 环境: $CONDA_ENV"
 
-    if [ -n "$SRC_ENV" ] && [ -n "$CONDA_NAME" ]; then
-        # rename 环境: 先 clone 再删除原环境（兼容性更好）
-        echo "重命名 conda 环境: $SRC_ENV → $CONDA_NAME"
-        dexec "source $CONDA_SH && conda create -n $CONDA_NAME --clone $SRC_ENV -y && conda remove -n $SRC_ENV --all -y"
+    # 验证环境是否存在
+    ENV_EXISTS=$(dexec "source $CONDA_SH && conda env list 2>/dev/null" | grep -w "$CONDA_ENV" || true)
+    if [ -z "$ENV_EXISTS" ]; then
+        echo "错误: conda 环境 '$CONDA_ENV' 不存在于容器内" >&2
+        echo "可用环境:" >&2
+        dexec "source $CONDA_SH && conda env list" 2>/dev/null >&2
+        exit 1
+    fi
 
-        # 设为默认激活环境
+    if [ -n "$CONDA_NAME" ]; then
+        echo "重命名 conda 环境: $CONDA_ENV → $CONDA_NAME"
+        dexec "source $CONDA_SH && conda create -n $CONDA_NAME --clone $CONDA_ENV -y && conda remove -n $CONDA_ENV --all -y"
         dexec "echo 'conda activate $CONDA_NAME' >> /root/.bashrc"
         echo "conda 环境 $CONDA_NAME 已设为默认"
-    elif [ -n "$SRC_ENV" ]; then
-        # 未指定自定义名，直接激活原环境
-        dexec "echo 'conda activate $SRC_ENV' >> /root/.bashrc"
-        echo "conda 环境 $SRC_ENV 已设为默认"
+    else
+        dexec "echo 'conda activate $CONDA_ENV' >> /root/.bashrc"
+        echo "conda 环境 $CONDA_ENV 已设为默认"
     fi
 fi
 
@@ -285,13 +306,8 @@ fi
 # 确定要激活的环境
 if [ -n "$CONDA_NAME" ]; then
     ACTIVATE_ENV="$CONDA_NAME"
-elif [ -n "$TORCH_VERSION" ]; then
-    case "$TORCH_VERSION" in
-        2.1.0) ACTIVATE_ENV="torch2.1.0_py38" ;;
-        2.6.0) ACTIVATE_ENV="torch2.6.0_py310" ;;
-        2.7.1) ACTIVATE_ENV="torch2.7.1_py310" ;;
-        *)     ACTIVATE_ENV="" ;;
-    esac
+elif [ -n "$CONDA_ENV" ]; then
+    ACTIVATE_ENV="$CONDA_ENV"
 else
     ACTIVATE_ENV=""
 fi

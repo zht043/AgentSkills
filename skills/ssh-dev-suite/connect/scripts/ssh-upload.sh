@@ -42,13 +42,13 @@ do_upload() {
 
     if command -v rsync &>/dev/null; then
         local rsync_cmd="rsync -avz -e \"$ssh_transport\""
-        [ -n "$PASSWORD" ] && rsync_cmd="sshpass -p '$PASSWORD' $rsync_cmd"
+        [ -n "$PASSWORD" ] && { export SSHPASS="$PASSWORD"; rsync_cmd="sshpass -e $rsync_cmd"; }
         eval "$rsync_cmd \"$src\" \"$USERNAME@$HOST:$dst_remote\""
     else
         local scp_cmd="scp -P $PORT -o StrictHostKeyChecking=accept-new"
         [ -n "$IDENTITY" ] && scp_cmd="$scp_cmd -i $IDENTITY"
         [ -d "$src" ] && scp_cmd="$scp_cmd -r"
-        [ -n "$PASSWORD" ] && scp_cmd="sshpass -p '$PASSWORD' $scp_cmd"
+        [ -n "$PASSWORD" ] && { export SSHPASS="$PASSWORD"; scp_cmd="sshpass -e $scp_cmd"; }
         eval "$scp_cmd \"$src\" \"$USERNAME@$HOST:$dst_remote\""
     fi
 }

@@ -10,6 +10,7 @@ import sys
 import os
 import json
 import platform
+import shlex
 import yaml
 
 # config.yaml 位于 suite 根目录（_lib 的上级目录）
@@ -68,9 +69,9 @@ def to_ssh_opts(profile):
         opts.append(f"-o ControlPersist={profile['control_persist']}")
 
     if profile["identity_file"]:
-        opts.append(f"-i {profile['identity_file']}")
+        opts.append(f"-i {shlex.quote(profile['identity_file'])}")
     if profile["jump_host"]:
-        opts.append(f"-J {profile['jump_host']}")
+        opts.append(f"-J {shlex.quote(profile['jump_host'])}")
 
     opts.append(f"{profile['username']}@{profile['host']}")
     return " ".join(opts)
