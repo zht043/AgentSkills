@@ -47,6 +47,31 @@ Agent 按以下顺序通过 AskUserQuestion 引导用户：
     - 不指定（用户自行管理 conda 环境）
 12. 若指定 torch → 询问 conda 环境自定义名称（可留空使用原名）
 
+### 第三阶段补充：代理/网络配置
+
+容器使用 `--network=host`，共享宿主机网络栈。若宿主机无外网或需要代理：
+
+13. 询问用户是否需要配置 HTTP 代理
+    - 若需要 → 询问代理地址（如 `http://127.0.0.1:7897`）
+    - 典型场景：通过 ssh-dev-suite 的反向代理隧道将本地代理转发到宿主机
+    - agent 在容器内执行时将代理环境变量注入命令：
+      ```bash
+      docker exec <container> bash -c "export http_proxy=<proxy> https_proxy=<proxy> && <command>"
+      ```
+    - 也可持久化写入容器 `~/.bashrc`：
+      ```bash
+      echo 'export http_proxy=http://127.0.0.1:7897' >> /root/.bashrc
+      echo 'export https_proxy=http://127.0.0.1:7897' >> /root/.bashrc
+      ```
+    - 代理可用于：pip install、git clone、curl/wget 等
+
+**反向代理使用示例**（配合 ssh-dev-suite）：
+```bash
+# 本地建立反向代理隧道（本机代理端口转发到远程宿主机）
+bash ssh-tunnel.sh proxy <profile> --local-proxy-port 7897
+# 容器内即可通过 http://127.0.0.1:7897 访问外网
+```
+
 ### 第四阶段：执行
 
 拼接参数调用脚本：

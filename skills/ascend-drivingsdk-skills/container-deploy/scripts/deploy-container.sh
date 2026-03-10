@@ -18,6 +18,7 @@ EXPOSE_PORTS=()
 ROOT_PASSWORD=""
 TORCH_VERSION=""
 CONDA_NAME=""
+PROXY_URL=""
 REGISTRY="swr.cn-south-1.myhuaweicloud.com/ascendhub/drivingsdk"
 
 # ========== 参数解析 ==========
@@ -41,6 +42,7 @@ usage() {
 环境配置:
   --torch-version <ver>      torch 版本（2.1.0/2.6.0/2.7.1），可选
   --conda-name <name>        conda 环境自定义名称（需配合 --torch-version）
+  --proxy <url>              HTTP 代理地址（如 http://127.0.0.1:7897），持久化到容器
   --registry <url>           镜像仓库地址（默认华为 SWR）
 USAGE
     exit 1
@@ -59,6 +61,7 @@ while [[ $# -gt 0 ]]; do
         --root-password) ROOT_PASSWORD="$2"; shift 2 ;;
         --torch-version) TORCH_VERSION="$2"; shift 2 ;;
         --conda-name)   CONDA_NAME="$2"; shift 2 ;;
+        --proxy)        PROXY_URL="$2"; shift 2 ;;
         --registry)     REGISTRY="$2"; shift 2 ;;
         -h|--help)      usage ;;
         *)              echo "未知参数: $1"; usage ;;
@@ -215,9 +218,25 @@ if [ -n "$SSH_PORT" ]; then
     fi
 
     # 启动 sshd
-    dexec "/usr/sbin/sshd 2>/dev/null || systemctl start sshd 2>/dev/null || true"
+    dexec "mkdir -p /run/sshd && /usr/sbin/sshd 2>/dev/null || systemctl start sshd 2>/dev/null || true"
 
     echo "SSH 已配置，端口: $SSH_PORT"
+fi
+
+# ========== 配置代理 ==========
+if [ -n "$PROXY_URL" ]; then
+    echo "配置容器内代理: $PROXY_URL"
+    dexec "cat >> /root/.bashrc << 'PROXY_EOF'
+
+# HTTP/HTTPS 代理配置
+export http_proxy=$PROXY_URL
+export https_proxy=$PROXY_URL
+export HTTP_PROXY=$PROXY_URL
+export HTTPS_PROXY=$PROXY_URL
+export no_proxy=localhost,127.0.0.1
+export NO_PROXY=localhost,127.0.0.1
+PROXY_EOF"
+    echo "代理已持久化到 ~/.bashrc"
 fi
 
 # ========== 配置 conda 环境 ==========
@@ -278,7 +297,10 @@ fi
 # CANN 版本
 echo ""
 echo "--- CANN ---"
-dexec "cat /usr/local/Ascend/ascend-toolkit/latest/version.cfg 2>/dev/null || echo '未找到 CANN'"
+dexec "cat /usr/local/Ascend/ascend-toolkit/latest/version.cfg 2>/dev/null \
+    || cat /usr/local/Ascend/ascend-toolkit/latest/version.info 2>/dev/null \
+    || find /usr/local/Ascend -maxdepth 3 -name 'version.info' -path '*/compiler/*' -exec grep 'Version=' {} \; 2>/dev/null \
+    || echo '未找到 CANN'"
 
 # conda 环境列表
 echo ""
@@ -316,6 +338,14 @@ if [ -n "$SSH_PORT" ]; then
     echo "      HostName ${HOSTNAME}"
     echo "      Port ${SSH_PORT}"
     echo "      User root"
+fi
+
+# 代理信息
+if [ -n "$PROXY_URL" ]; then
+    echo ""
+    echo "--- 代理 ---"
+    echo "http_proxy=$PROXY_URL"
+    echo "代理已持久化到容器 ~/.bashrc"
 fi
 
 echo ""

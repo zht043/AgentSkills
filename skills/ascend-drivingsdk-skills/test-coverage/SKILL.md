@@ -12,6 +12,28 @@ type: capability
 ## 前置条件
 项目需完成构建集成，参考 `docs/build-integration.md`。
 
+### 测试依赖安装
+
+覆盖率收集前需确保测试依赖已安装（参考 `tests/README.md`）：
+
+1. 根目录依赖：`pip install -r requirements.txt`
+2. 测试专用依赖：`pip install -r tests/requirements.txt`
+   - 包含：torch_scatter, torchvision, hypothesis, expecttest, pyyaml, prettytable, pydantic
+3. mmcv 源码编译（需要网络访问，如需代理可配合 ssh-dev-suite 反向代理）：
+   ```bash
+   git clone -b 1.x https://github.com/open-mmlab/mmcv.git
+   cd mmcv
+   MMCV_WITH_OPS=1 FORCE_NPU=1 python setup.py build_ext
+   MMCV_WITH_OPS=1 FORCE_NPU=1 python setup.py develop
+   cd ../
+   ```
+
+**注意**：如环境无外网访问，先通过 ssh-dev-suite 的反向代理隧道配置代理：
+```bash
+export http_proxy=http://127.0.0.1:<proxy_port>
+export https_proxy=http://127.0.0.1:<proxy_port>
+```
+
 ## 使用
 ```bash
 # C++ 覆盖率（需先以 COVERAGE=ON 构建并执行测试）
