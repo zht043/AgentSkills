@@ -21,6 +21,34 @@ bash connect/scripts/ssh-download.sh <profile> <remote> <local>
 bash connect/scripts/ssh-job.sh start|status|output|kill|list|stream <profile> [args]
 ```
 
+## ssh-exec 与 ssh-job 选择策略
+
+**关键原则**：ssh-exec 的输出在命令完全结束后才回传，长时间运行的命令会导致用户看不到任何进度。
+
+| 场景 | 工具 | 原因 |
+|------|------|------|
+| 快速命令（<30s）：`ls`、`cat`、`docker images`、`conda env list` | ssh-exec | 即时返回，无需后台 |
+| 中等耗时（30s-2min）：`pip install`、`docker pull`、单个测试 | ssh-job + 轮询 | 可随时查看进度 |
+| 长耗时（>2min）：批量测试、编译构建、模型训练 | ssh-job + checkpoint | 支持跨会话恢复 |
+
+**ssh-job 用法模式**（替代 ssh-exec 用于中长耗时任务）：
+
+```bash
+# 1. 启动后台任务
+bash connect/scripts/ssh-job.sh start <profile> "<command>"
+
+# 2. 定期查看进度（根据预计耗时调整频率）
+bash connect/scripts/ssh-job.sh output <profile> <job_id> --tail 20
+
+# 3. 搜索错误
+bash connect/scripts/ssh-job.sh output <profile> <job_id> --grep 'error|fail|ERROR'
+```
+
+**Agent 必须遵守**：
+- 预计耗时 >30 秒的命令，**禁止使用 ssh-exec**，改用 ssh-job
+- 使用 ssh-job 时，每次轮询只读尾部（`--tail`）或搜索关键词（`--grep`），不读完整日志
+- 批量执行多个子任务（如逐文件跑测试）时，为整个批量任务使用一个 ssh-job，在命令中加入进度打印（如 `echo "[$(date +%H:%M:%S)] Running test_xxx.py..."`），便于通过 `--tail` 观察进度
+
 ## 引号与特殊字符
 
 远程命令经过多层 shell 解释（本地 shell → ssh → 远端 shell → docker exec → 容器内 shell），引号嵌套极易出错。

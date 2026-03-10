@@ -16,11 +16,15 @@ description: C++/Python代码覆盖率收集，支持gcov/lcov和coverage模块
 
 ### 测试依赖安装
 
-覆盖率收集前需确保测试依赖已安装（参考 `tests/README.md`）：
+覆盖率收集前 **必须** 确保测试依赖已安装。Agent **不能跳过此检查**——缺少依赖会导致所有测试在 import 阶段直接 FAIL（典型报错：`ModuleNotFoundError: No module named 'expecttest'`）。
 
-1. 根目录依赖：`pip install -r requirements.txt`
-2. 测试专用依赖：`pip install -r tests/requirements.txt`
-   - 包含：torch_scatter, torchvision, hypothesis, expecttest, pyyaml, prettytable, pydantic
+**Agent 执行顺序**：
+
+1. **先验证**：在容器内执行 `python -c "import expecttest; import hypothesis"` 快速检测核心测试依赖是否存在
+2. **若缺失**，按顺序安装：
+   - 根目录依赖：`pip install -r requirements.txt`
+   - 测试专用依赖：`pip install -r tests/requirements.txt`
+     - 包含：torch_scatter, torchvision, hypothesis, expecttest, pyyaml, prettytable, pydantic
 3. mmcv 源码编译（需要网络访问，如需代理可在可用 skill 中寻找提供反向代理/SSH 隧道功能的工具）：
    ```bash
    git clone -b 1.x https://github.com/open-mmlab/mmcv.git

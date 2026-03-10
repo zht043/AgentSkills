@@ -79,26 +79,55 @@ bash scripts/deploy-container.sh \
 2. **Conda 环境选择**（容器创建后）：
    - 执行 `bash scripts/deploy-container.sh --list-conda-envs`（或直接 `docker exec <container> bash -c 'source <conda.sh> && conda env list'`）列出容器内实际可用的 conda 环境
    - 将环境列表展示给用户，让用户选择要激活的环境（或选择跳过）
-   - 若用户选择了环境，询问是否需要重命名
+   - 若用户选择了环境，**必须询问是否要重命名（clone）该环境**：
+     - 向用户解释：重命名实质是 `conda create --clone <原名> -n <新名>`，原环境保留不变
+     - 提供推荐命名供用户选择或自定义，推荐命名基于项目/用途语义，例如：`sdk-dev`、`driving-dev`、`<容器名>-dev`、`my-env`
+     - 若用户选择重命名，使用 `--conda-name <新名>` 参数
+     - 若用户选择保持原名，仅使用 `--conda-env <原名>` 即可
    - 再次调用脚本（或手动配置）：`--conda-env <选择的环境名> [--conda-name <新名>]`
 
-3. **部署档案**：
+3. **项目依赖安装**（conda 配置完成后，可选）：
+   - 询问用户是否需要安装项目依赖（推荐在此时完成，避免后续运行测试或覆盖率时报 ModuleNotFoundError）
+   - 若用户确认，按以下顺序在容器内执行：
+     1. 根目录依赖：`pip install -r requirements.txt`（若存在）
+     2. 测试依赖：`pip install -r tests/requirements.txt`（若存在，典型包：expecttest, hypothesis, pyyaml, prettytable, pydantic 等）
+     3. 提醒用户：部分依赖可能需要网络（如 mmcv 源码编译），若容器无外网访问，需先配置代理
+   - 若用户选择跳过，提醒后续首次运行测试前需手动安装
+
+4. **部署档案**：
 
 脚本执行完成后，agent **必须**：
 
 - **收集完整环境信息**并以结构化方式展示给用户：宿主机信息、NPU 信息、容器信息、挂载路径、SSH 配置、代理、conda 环境、SDK 版本链、常用命令速查
 - **生成部署档案文件** `deployment-manifest.md`，保存到容器内 workspace 根目录
+- **将档案完整内容打印到对话中**，让用户无需进入容器即可直接查阅：以 Markdown 代码块或引用块格式完整输出档案正文，不截断
 
 ## 配置
 参考本目录 `config.example.yaml`，复制为 `config.yaml` 后由 agent 引导填写。
 
 ## 跨平台兼容
-- 脚本包含 Windows 换行符（`\r\n`）自动修复：从 Windows 传输到 Linux 时，脚本首次运行会自动 `sed` 清理并 `exec` 重新执行
-- **注意**：脚本的自修复依赖 bash 能解析到修复代码。若脚本因 `\r\n` 直接无法启动，agent 应在传输前先在源端执行 `sed 's/\r$//' script.sh > script.fixed.sh` 或 `tr -d '\r' < script.sh > script.fixed.sh`，确保换行符正确
-- 从 Windows 向 Linux 传输项目源码时，`.sh`、`.py`、`CMakeLists.txt` 等文件可能带有 `\r\n`，agent 应在首次构建前批量修复：`find . -name "*.sh" -o -name "*.py" -o -name "CMakeLists.txt" | xargs sed -i 's/\r$//'`
+
+### 脚本换行符修复（强制前置步骤）
+
+从 Windows 向 Linux 传输脚本时，`\r\n` 换行符会导致 bash 报 `syntax error near unexpected token $'\r'`。脚本虽内置自修复逻辑，但 **自修复依赖 bash 能解析到修复代码行**——若 `\r\n` 导致更早的语法错误，自修复无法生效。
+
+**Agent 必须**：在远程执行任何 `.sh` 脚本前，**先执行换行符清理**，不依赖脚本自修复：
+
+```bash
+# 上传脚本到远程后，执行前先清理
+sed -i 's/\r$//' /path/to/deploy-container.sh
+```
+
+### 项目源码换行符
+
+从 Windows 向 Linux 传输项目源码时，`.sh`、`.py`、`CMakeLists.txt` 等文件可能带有 `\r\n`，agent 应在首次构建前批量修复：
+
+```bash
+find . -name "*.sh" -o -name "*.py" -o -name "CMakeLists.txt" | xargs sed -i 's/\r$//'
+```
 
 ## Token约束
 - 脚本输出：直接展示给用户，不做额外处理
 - docker pull 输出：只关注成功/失败状态
 - 环境信息：完整展示
-- 部署档案：完整生成，不截断
+- 部署档案：完整生成并打印到对话，不截断
