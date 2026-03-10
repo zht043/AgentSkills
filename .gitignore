@@ -1,3 +1,4 @@
-skills/*/config.yaml
+**/config.yaml
 __pycache__/
 docs/plans/
+
