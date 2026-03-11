@@ -1,6 +1,6 @@
 ---
 name: ascend-drivingsdk-skills
-description: Ascend NPU DrivingSDK开发工具集
+description: Ascend NPU DrivingSDK开发工具集（环境搭建+开发工具）
 ---
 
 # ascend-drivingsdk-skills
@@ -13,13 +13,21 @@ Ascend DrivingSDK 开发辅助 skill 集合，每个子目录为独立 skill。
 
 使用任何子 skill 前，Agent 必须：
 1. 读取对应子 skill 的 `SKILL.md`（完整交互流程和规范）
-2. 读取对应子 skill 的 `scripts/*.sh`（脚本参数、行为、退出码）
+2. 若子 skill 有 `scripts/` 目录，读取其中脚本（参数、行为、退出码）
 3. 若子 skill 描述中提到需要某种能力（如 SSH 隧道、反向代理等），在当前项目可用的 skill 集合中寻找能提供该能力的 skill，并读取其相关文档
-4. 读取 `config.example.yaml`（了解可配置项）
+4. 读取 `config.example.yaml`（了解可配置项，如存在）
 
 **不要跳过任何步骤。不要仅凭本文件的一句话描述就开始执行。**
 
 ## Skills
+
+### 环境搭建
+- **npu-basics**：NPU 基础命令（状态监控、版本查询、设备指定、进程管理、日志排查）→ `npu-basics/SKILL.md`
+- **cann-install**：CANN 安装（社区版/商业版，run包/conda/下载三种方式）→ `cann-install/SKILL.md`
+- **torch-npu-install**：PyTorch + torch_npu 安装（预编译包/源码编译）→ `torch-npu-install/SKILL.md`
+- **drivingsdk-install**：DrivingSDK（mx_driving）编译安装与更新 → `drivingsdk-install/SKILL.md`
+
+### 开发工具
 - **container-deploy**：DrivingSDK 容器环境一键部署 → `container-deploy/SKILL.md`
   - 含镜像管理、工作空间挂载、SSH配置、conda环境、代理配置、部署档案生成
   - 远程场景需要 SSH 远程执行和反向代理能力（在可用 skill 中寻找提供此能力的工具）

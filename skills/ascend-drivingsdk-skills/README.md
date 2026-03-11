@@ -4,16 +4,32 @@ Ascend NPU [DrivingSDK](https://gitcode.com/Ascend/DrivingSDK) 开发辅助 skil
 
 ## Skill 列表
 
+### 环境搭建
+
+| Skill | 功能 |
+|-------|------|
+| [npu-basics](npu-basics/) | NPU 基础命令：状态监控、版本查询、设备指定、进程管理、日志排查 |
+| [cann-install](cann-install/) | CANN 安装（社区版/商业版，run包/conda/下载三种方式） |
+| [torch-npu-install](torch-npu-install/) | PyTorch + torch_npu 安装（预编译包/源码编译） |
+| [drivingsdk-install](drivingsdk-install/) | DrivingSDK（mx_driving）编译安装与更新 |
+
+### 开发工具
+
 | Skill | 功能 |
 |-------|------|
 | [test-coverage](test-coverage/) | C++/Python 代码覆盖率收集（gcov/lcov + coverage 模块） |
 | [container-deploy](container-deploy/) | 容器环境一键部署（镜像管理、NPU设备挂载、SSH、conda、部署档案） |
 
-## 前置条件
+## 典型使用顺序
 
-- 宿主机已安装昇腾 NPU 驱动（`/usr/local/Ascend/driver` 存在）
-- 宿主机已安装 Docker
-- 远程场景需要 SSH 远程连接能力（在可用 skill 中寻找提供 SSH 连接、隧道等功能的工具）
+首次搭建完整 DrivingSDK 开发环境的推荐顺序：
+
+```
+npu-basics（确认 NPU 可用）
+  → cann-install（安装 CANN）
+    → torch-npu-install（安装 PyTorch + torch_npu）
+      → drivingsdk-install（编译安装 DrivingSDK）
+```
 
 ## 共享库
 
@@ -24,3 +40,4 @@ Ascend NPU [DrivingSDK](https://gitcode.com/Ascend/DrivingSDK) 开发辅助 skil
 | `coverage-common.sh` | 配置文件读取、路径处理等通用函数 |
 
 各 skill 独立自包含，详见对应子目录的 README.md。
+

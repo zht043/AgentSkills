@@ -43,6 +43,10 @@ graph LR
 | ┗ [debug](skills/ssh-dev-suite/debug/) | 子模块 | 远程排查 |
 | ┗ [long-task](skills/ssh-dev-suite/long-task/) | 子模块 | 长耗时任务管理 |
 | [ascend-drivingsdk-skills](skills/ascend-drivingsdk-skills/) | skills | Ascend NPU DrivingSDK 开发辅助套件 |
+| ┗ [npu-basics](skills/ascend-drivingsdk-skills/npu-basics/) | 子模块 | NPU 状态监控、版本查询、设备指定 |
+| ┗ [cann-install](skills/ascend-drivingsdk-skills/cann-install/) | 子模块 | CANN 安装（社区版/商业版，三种方式） |
+| ┗ [torch-npu-install](skills/ascend-drivingsdk-skills/torch-npu-install/) | 子模块 | PyTorch + torch_npu 安装 |
+| ┗ [drivingsdk-install](skills/ascend-drivingsdk-skills/drivingsdk-install/) | 子模块 | DrivingSDK 编译安装与更新 |
 | ┗ [test-coverage](skills/ascend-drivingsdk-skills/test-coverage/) | 子模块 | C++/Python 代码覆盖率收集 |
 | ┗ [container-deploy](skills/ascend-drivingsdk-skills/container-deploy/) | 子模块 | 容器环境一键部署（镜像/NPU/SSH/conda/部署档案） |
 | [doc-illustrator](skills/doc-illustrator/) | 单体 | 为技术文档生成Mermaid插图 |
@@ -99,6 +103,10 @@ skills/
     debug/ long-task/
     _lib/                               #   共享工具脚本
   ascend-drivingsdk-skills/             # Ascend NPU DrivingSDK 套件（skills）
+    npu-basics/                         #   NPU 基础命令
+    cann-install/                       #   CANN 安装
+    torch-npu-install/                  #   PyTorch + torch_npu 安装
+    drivingsdk-install/                 #   DrivingSDK 编译安装
     test-coverage/                      #   覆盖率收集
     container-deploy/                   #   容器环境部署
     _lib/                               #   共享工具脚本
