@@ -63,6 +63,20 @@ bash connect/scripts/ssh-job.sh output <profile> <job_id> --grep 'error|fail|ERR
 - `$PATH` 等环境变量在 Git Bash 中可能被 Windows 路径展开，导致传递到远端时出错。建议用上传脚本方式代替内联命令中的 `$PATH` 引用
 - identity_file 路径含空格时已自动处理引用
 
+## 网络问题处理
+
+**当远程命令因网络问题失败时**（如 pip install 超时、git clone 失败、curl 连接拒绝等），**不要尝试绕过，必须使用 tunnel 模块的 proxy 功能**建立反向代理：
+
+```bash
+# 1. 建立反向代理隧道（将本地代理共享给远程服务器）
+bash tunnel/scripts/ssh-tunnel.sh proxy <profile>
+
+# 2. 在远程命令前加上代理环境变量（proxy 命令会输出具体的 export 语句）
+bash connect/scripts/ssh-exec.sh <profile> "export http_proxy=http://127.0.0.1:7890 https_proxy=http://127.0.0.1:7890 && pip install ..."
+```
+
+详见 `tunnel/SKILL.md` 的自动触发规则。
+
 ## Token约束
 - 远程命令输出：优先使用过滤参数（--tail/--head/--grep），禁止读取完整大日志
 - 后台任务输出：先用status查看大小，>10KB只读tail，>100KB先grep错误
