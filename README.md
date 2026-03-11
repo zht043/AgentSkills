@@ -47,8 +47,8 @@ graph LR
 | ┗ [cann-install](skills/ascend-drivingsdk-skills/cann-install/) | 子模块 | CANN 安装（社区版/商业版，三种方式） |
 | ┗ [torch-npu-install](skills/ascend-drivingsdk-skills/torch-npu-install/) | 子模块 | PyTorch + torch_npu 安装 |
 | ┗ [drivingsdk-install](skills/ascend-drivingsdk-skills/drivingsdk-install/) | 子模块 | DrivingSDK 编译安装与更新 |
-| ┗ [test-coverage](skills/ascend-drivingsdk-skills/test-coverage/) | 子模块 | C++/Python 代码覆盖率收集 |
 | ┗ [container-deploy](skills/ascend-drivingsdk-skills/container-deploy/) | 子模块 | 容器环境一键部署（镜像/NPU/SSH/conda/部署档案） |
+| ┗ [test-coverage](skills/ascend-drivingsdk-skills/test-coverage/) | 子模块 | C++/Python 代码覆盖率收集 |
 | [doc-illustrator](skills/doc-illustrator/) | 单体 | 为技术文档生成Mermaid插图 |
 
 ## Skill Creator

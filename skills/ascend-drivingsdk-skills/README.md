@@ -12,13 +12,13 @@ Ascend NPU [DrivingSDK](https://gitcode.com/Ascend/DrivingSDK) 开发辅助 skil
 | [cann-install](cann-install/) | CANN 安装（社区版/商业版，run包/conda/下载三种方式） |
 | [torch-npu-install](torch-npu-install/) | PyTorch + torch_npu 安装（预编译包/源码编译） |
 | [drivingsdk-install](drivingsdk-install/) | DrivingSDK（mx_driving）编译安装与更新 |
+| [container-deploy](container-deploy/) | 容器环境一键部署（镜像管理、NPU设备挂载、SSH、conda、部署档案） |
 
 ### 开发工具
 
 | Skill | 功能 |
 |-------|------|
 | [test-coverage](test-coverage/) | C++/Python 代码覆盖率收集（gcov/lcov + coverage 模块） |
-| [container-deploy](container-deploy/) | 容器环境一键部署（镜像管理、NPU设备挂载、SSH、conda、部署档案） |
 
 ## 典型使用顺序
 

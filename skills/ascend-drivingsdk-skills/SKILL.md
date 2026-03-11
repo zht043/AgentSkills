@@ -26,11 +26,11 @@ Ascend DrivingSDK 开发辅助 skill 集合，每个子目录为独立 skill。
 - **cann-install**：CANN 安装（社区版/商业版，run包/conda/下载三种方式）→ `cann-install/SKILL.md`
 - **torch-npu-install**：PyTorch + torch_npu 安装（预编译包/源码编译）→ `torch-npu-install/SKILL.md`
 - **drivingsdk-install**：DrivingSDK（mx_driving）编译安装与更新 → `drivingsdk-install/SKILL.md`
-
-### 开发工具
 - **container-deploy**：DrivingSDK 容器环境一键部署 → `container-deploy/SKILL.md`
   - 含镜像管理、工作空间挂载、SSH配置、conda环境、代理配置、部署档案生成
   - 远程场景需要 SSH 远程执行和反向代理能力（在可用 skill 中寻找提供此能力的工具）
+
+### 开发工具
 - **test-coverage**：C++/Python 代码覆盖率收集 → `test-coverage/SKILL.md`
   - 含 gcov/lcov（C++）和 coverage 模块（Python）
   - 依赖项目构建集成（参见 `test-coverage/docs/build-integration.md`）
