@@ -1,6 +1,13 @@
 ---
 name: ssh-dev-suite/deploy
 description: 本地项目部署到远程服务器，支持增量同步、部署钩子、回滚
+metadata:
+  type: capability
+  version: "1.0"
+  tags: [deploy, sync, rollback]
+  domain: devops
+  risk_level: high
+  platform: cross-platform
 ---
 
 # ssh-deploy

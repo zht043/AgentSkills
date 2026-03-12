@@ -1,6 +1,13 @@
 ---
 name: ascend-drivingsdk-skills/container-deploy
 description: DrivingSDK容器环境一键部署，含镜像管理、SSH配置、conda环境
+metadata:
+  type: capability
+  version: "1.0"
+  tags: [docker, container, deploy]
+  domain: ai-infra
+  risk_level: high
+  platform: cross-platform
 ---
 
 # container-deploy

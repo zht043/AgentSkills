@@ -1,6 +1,13 @@
 ---
 name: ssh-dev-suite/connect
 description: SSH连接管理、远程命令执行、文件传输、后台任务
+metadata:
+  type: capability
+  version: "1.0"
+  tags: [ssh, remote, execute, transfer]
+  domain: devops
+  risk_level: medium
+  platform: cross-platform
 ---
 
 # ssh-connect

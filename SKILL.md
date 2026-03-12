@@ -40,12 +40,37 @@ description: AI Agent 技能库项目规范，指导 agent 正确阅读和使用
 | 能力需求 | 匹配 skill 目录 | 说明 |
 |----------|-----------------|------|
 | SSH 远程连接/执行 | `ssh-dev-suite/connect/` | 多 profile 连接管理、远程命令执行、文件传输 |
-| SSH 隧道/端口转发/反向代理 | `ssh-dev-suite/tunnel/` | 端口转发、代理隧道 |
+| SSH 隧道/端口转发/反向代理 | `ssh-dev-suite/tunnel/` | 端口转发、SOCKS代理、反向代理 |
 | 远程部署/同步 | `ssh-dev-suite/deploy/` | 项目同步、部署钩子、回滚 |
-| 远程调试/排查 | `ssh-dev-suite/debug/` | 远程问题排查 |
+| 远程调试/排查 | `ssh-dev-suite/debug/` | 结构化远程问题排查 |
 | 长耗时远程任务 | `ssh-dev-suite/long-task/` | 断连恢复、checkpoint 管理 |
+| NPU 状态监控/设备管理 | `ascend-drivingsdk-skills/npu-basics/` | npu-smi、设备指定、版本查询 |
+| CANN 安装 | `ascend-drivingsdk-skills/cann-install/` | 社区版/商业版，run包/conda/下载 |
+| PyTorch NPU 安装 | `ascend-drivingsdk-skills/torch-npu-install/` | PyTorch + torch_npu 版本匹配安装 |
+| DrivingSDK 编译安装 | `ascend-drivingsdk-skills/drivingsdk-install/` | mx_driving 编译、依赖处理 |
+| 容器环境部署 | `ascend-drivingsdk-skills/container-deploy/` | Docker 容器一键部署、NPU挂载 |
+| 代码覆盖率收集 | `ascend-drivingsdk-skills/test-coverage/` | C++ gcov/lcov、Python coverage |
+| 文档插图/图表生成 | `doc-illustrator/` | Mermaid 插图、模板匹配+LLM设计 |
+| 对话历史导出 | `export-history/` | Claude Code 会话导出为 HTML |
+
+### 按领域分组
+
+| 领域 | Skills |
+|------|--------|
+| **devops** | `ssh-dev-suite/`（connect、deploy、tunnel、debug、long-task） |
+| **ai-infra** | `ascend-drivingsdk-skills/`（npu-basics、cann-install、torch-npu-install、drivingsdk-install、container-deploy、test-coverage） |
+| **documentation** | `doc-illustrator/` |
+| **general** | `export-history/` |
 
 > **注意**：此索引仅对本项目 skills/ 目录生效。skill 文档本身不直接引用其他 skill 名称，以保持独立可移植性。当 skill 被拷贝到其他项目使用时，用户需根据自己环境的可用工具替换上述映射。
+
+### Agent 阅读策略（渐进式加载）
+
+为优化 token 使用，agent 应分阶段加载 skill 文档：
+
+1. **路由阶段**（轻量）：只读本文件的能力索引表，确定需要哪个 skill
+2. **使用阶段**（深入）：读取目标 skill 的完整文档树（SKILL.md + scripts/ + config.example.yaml）
+3. **不要一次性加载所有 skill 的完整文档**，按需加载即可
 
 ### SSH 远程开发规范
 

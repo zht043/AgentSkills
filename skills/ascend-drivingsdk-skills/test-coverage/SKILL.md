@@ -1,6 +1,13 @@
 ---
 name: ascend-drivingsdk-skills/test-coverage
 description: C++/Python代码覆盖率收集，支持gcov/lcov和coverage模块
+metadata:
+  type: capability
+  version: "1.0"
+  tags: [coverage, gcov, pytest]
+  domain: ai-infra
+  risk_level: low
+  platform: linux
 ---
 
 # test-coverage

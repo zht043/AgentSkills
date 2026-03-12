@@ -1,6 +1,13 @@
 ---
 name: ascend-drivingsdk-skills/torch-npu-install
 description: PyTorch和torch_npu安装，含版本选择、预编译包、源码编译
+metadata:
+  type: process
+  version: "1.0"
+  tags: [pytorch, torch-npu, install]
+  domain: ai-infra
+  risk_level: medium
+  platform: linux
 ---
 
 # torch-npu-install

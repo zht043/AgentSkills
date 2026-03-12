@@ -1,6 +1,13 @@
 ---
 name: ascend-drivingsdk-skills
-description: Ascend NPU DrivingSDK开发工具集（环境搭建+开发工具）
+description: 昇腾NPU DrivingSDK开发工具集，含CANN/PyTorch/SDK安装、NPU监控、容器部署、覆盖率收集
+metadata:
+  type: capability
+  version: "1.0"
+  tags: [ascend, npu, drivingsdk]
+  domain: ai-infra
+  risk_level: medium
+  platform: linux
 ---
 
 # ascend-drivingsdk-skills

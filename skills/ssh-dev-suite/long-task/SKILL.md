@@ -1,6 +1,13 @@
 ---
 name: ssh-dev-suite/long-task
 description: 长耗时任务管理，支持checkpoint记忆、agent休息与恢复
+metadata:
+  type: process
+  version: "1.0"
+  tags: [long-task, checkpoint, background]
+  domain: devops
+  risk_level: low
+  platform: cross-platform
 ---
 
 # ssh-long-task

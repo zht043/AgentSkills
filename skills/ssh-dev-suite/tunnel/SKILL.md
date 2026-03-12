@@ -1,6 +1,13 @@
 ---
 name: ssh-dev-suite/tunnel
 description: SSH通道管理，支持本地/远程端口转发、SOCKS代理、反向代理
+metadata:
+  type: capability
+  version: "1.0"
+  tags: [ssh, tunnel, proxy, port-forward]
+  domain: devops
+  risk_level: medium
+  platform: cross-platform
 ---
 
 # ssh-tunnel

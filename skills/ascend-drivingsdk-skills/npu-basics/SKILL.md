@@ -1,6 +1,13 @@
 ---
 name: ascend-drivingsdk-skills/npu-basics
 description: NPU基础命令：状态监控、设备管理、版本查询、环境变量配置
+metadata:
+  type: capability
+  version: "1.0"
+  tags: [npu, ascend, monitoring]
+  domain: ai-infra
+  risk_level: low
+  platform: linux
 ---
 
 # npu-basics

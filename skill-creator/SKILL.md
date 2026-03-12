@@ -53,10 +53,36 @@ Suite规范：
 ```yaml
 ---
 name: skill名称
-description: 一句话描述，用于agent判断何时调用
-type: capability | process
+description: 一句话描述（含核心动词、关键名词和同义词，用于agent判断何时调用）
+metadata:
+  type: capability | process
+  version: "1.0"
+  tags: [标签1, 标签2, 标签3]
+  domain: general | devops | ai-infra | documentation
+  risk_level: low | medium | high
+  platform: linux | windows | macos | cross-platform
 ---
 ```
+
+字段说明：
+- `name`：skill标识，suite子模块格式为 `suite-name/module-name`
+- `description`：**核心触发字段**，agent据此判断是否调用。见下方"description编写指南"
+- `metadata.type`：`capability`（能力型，重脚本）或 `process`（流程型，重文档）
+- `metadata.version`：语义版本号
+- `metadata.tags`：分类标签，用于索引和搜索
+- `metadata.domain`：所属领域
+- `metadata.risk_level`：操作风险等级（`low`=只读/分析，`medium`=修改配置/安装，`high`=部署/删除/系统级操作）
+- `metadata.platform`：运行平台
+
+### description编写指南
+
+description 是 agent 路由的核心依据，必须精心编写：
+
+1. **包含核心动词**：用"安装/部署/监控/导出/生成"等动作词开头
+2. **列出关键名词**：技术栈名称、工具名、协议名等（如 SSH、NPU、Mermaid）
+3. **加入同义词**：覆盖用户可能的不同表述。如"部署"可同时涵盖 deploy/发布/上线
+4. **具体优于笼统**：✗ "开发工具集" → ✓ "含CANN/PyTorch/SDK安装、NPU监控、容器部署"
+5. **控制长度**：一句话，不超过50字
 
 ## 能力型模板
 ```

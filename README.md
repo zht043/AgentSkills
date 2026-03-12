@@ -50,6 +50,7 @@ graph LR
 | ┗ [container-deploy](skills/ascend-drivingsdk-skills/container-deploy/) | 子模块 | 容器环境一键部署（镜像/NPU/SSH/conda/部署档案） |
 | ┗ [test-coverage](skills/ascend-drivingsdk-skills/test-coverage/) | 子模块 | C++/Python 代码覆盖率收集 |
 | [doc-illustrator](skills/doc-illustrator/) | 单体 | 为技术文档生成Mermaid插图 |
+| [export-history](skills/export-history/) | 单体 | Claude Code对话历史导出为可视化HTML |
 
 ## Skill Creator
 
@@ -111,6 +112,7 @@ skills/
     container-deploy/                   #   容器环境部署
     _lib/                               #   共享工具脚本
   doc-illustrator/                      # 文档插图生成
+  export-history/                       # 对话历史导出
 
 docs/plans/                             # 设计与计划文档
 ```

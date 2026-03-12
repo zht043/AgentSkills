@@ -1,6 +1,13 @@
 ---
 name: ssh-dev-suite/debug
 description: 结构化远程服务器问题排查流程，支持上下文感知的环境检查和容器内调试
+metadata:
+  type: process
+  version: "1.0"
+  tags: [debug, troubleshoot, remote]
+  domain: devops
+  risk_level: low
+  platform: cross-platform
 ---
 
 # ssh-debug

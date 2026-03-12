@@ -1,6 +1,13 @@
 ---
 name: ascend-drivingsdk-skills/cann-install
 description: CANN（昇腾异构计算架构）安装，支持社区版/商业版，run包/conda/下载三种方式
+metadata:
+  type: process
+  version: "1.0"
+  tags: [cann, install, ascend]
+  domain: ai-infra
+  risk_level: medium
+  platform: linux
 ---
 
 # cann-install

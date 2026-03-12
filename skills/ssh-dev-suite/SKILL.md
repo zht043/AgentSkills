@@ -1,6 +1,13 @@
 ---
 name: ssh-dev-suite
 description: SSH远程开发套件，连接管理、命令执行、文件传输、部署、隧道、调试
+metadata:
+  type: capability
+  version: "1.0"
+  tags: [ssh, remote, devops]
+  domain: devops
+  risk_level: medium
+  platform: cross-platform
 ---
 
 # ssh-dev-suite

@@ -1,6 +1,13 @@
 ---
 name: doc-illustrator
 description: 为技术文档生成Mermaid插图，支持模板匹配和LLM自主设计
+metadata:
+  type: capability
+  version: "1.0"
+  tags: [mermaid, diagram, documentation]
+  domain: documentation
+  risk_level: low
+  platform: cross-platform
 ---
 
 # doc-illustrator
