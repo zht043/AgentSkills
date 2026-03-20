@@ -1,0 +1,34 @@
+name: "思维导图"
+description: "中心主题向外发散，展示关联概念、头脑风暴结果、主题分析"
+keywords: ["思维导图", "脑图", "发散", "主题", "头脑风暴", "联想", "概念", "主题地图"]
+patterns:
+  - type: "radial"
+    indicators: ["围绕", "相关", "涉及", "包括", "分为"]
+
+mermaid_guidance: |
+  使用 mindmap 类型。结构：root((中心主题)) 向外展开层级。
+  Frontmatter 配置照常（theme: neutral, look: neo）。
+  mindmap 不支持 classDef 和 style 指令，依赖 Mermaid 默认样式，无需手动配色。
+  层级控制在 3 层以内，每个叶节点文本 ≤ 10 字。
+  图标加在叶节点文本中增加辨识度。
+
+example: |
+  ---
+  config:
+    theme: neutral
+    look: neo
+  ---
+  mindmap
+    root((🧠 核心主题))
+      分支一
+        叶节点 A
+        叶节点 B
+      分支二
+        叶节点 C
+        叶节点 D
+      分支三
+        叶节点 E
+
+limitations: |
+  mindmap 不支持自定义颜色和连线样式，也不支持跨节点连线。
+  若需要灵活连线或自定义颜色，改用 flowchart TD。

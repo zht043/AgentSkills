@@ -1,0 +1,21 @@
+name: "流程图"
+description: "展示执行流程、决策分支、操作序列"
+keywords: ["流程", "执行", "步骤", "调用", "触发", "分支", "判断"]
+patterns:
+  - type: "linear"
+    indicators: ["然后", "接着", "最后", "依次"]
+  - type: "branching"
+    indicators: ["如果", "判断", "分支", "并行", "同时"]
+  - type: "pipeline"
+    indicators: ["管道", "阶段", "phase", "stage"]
+
+mermaid_guidance: |
+  默认使用 flowchart LR 水平扩展布局。
+  决策用菱形 {"条件"}:::warning，操作用圆角 (["操作"]):::core，开始/结束用圆角 (["文本"])。
+  并行分支用多条箭头从同一节点出发，或用 A & B --> C 并列汇聚。
+  关键路径用粗线 ==> 标注，异步用虚线 -.->。
+  在图表顶部定义 classDef（不指定 color），按语义分配到节点。
+
+examples:
+  - "apply() 执行流程：导入控制 → 补丁替换 → 环境配置"
+  - "CI/CD pipeline：构建 → 测试 → 部署"

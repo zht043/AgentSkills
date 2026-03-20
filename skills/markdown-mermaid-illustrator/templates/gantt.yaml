@@ -1,0 +1,34 @@
+name: "甘特图"
+description: "展示项目任务的时间排期、依赖关系和里程碑"
+keywords: ["甘特", "排期", "计划", "时间表", "任务", "里程碑", "项目进度", "deadline"]
+patterns:
+  - type: "timeline-tasks"
+    indicators: ["计划", "排期", "完成时间", "截止", "阶段", "并行", "串行"]
+
+mermaid_guidance: |
+  使用 gantt。
+  dateFormat YYYY-MM-DD（日期格式必须声明）。
+  section 划分阶段，任务格式：任务名 : status, id, 开始日期, 持续时间
+  status：active（进行中）, done（已完成）, crit（关键路径）, 留空（待做）
+  持续时间：1d（1天）, 1w（1周）, 1M（1月）。
+  after id 表示依赖关系（在某任务完成后开始）。
+  milestone 标记里程碑：任务名 : milestone, m1, 日期, 0d
+
+example: |
+  ---
+  config:
+    theme: neutral
+    look: neo
+  ---
+  gantt
+      title 产品发布计划
+      dateFormat YYYY-MM-DD
+      section 设计
+          需求分析    : done,    req,  2025-01-01, 7d
+          UI 设计     : active,  ui,   after req,  14d
+      section 开发
+          后端开发    : crit,    be,   after req,  21d
+          前端开发    :          fe,   after ui,   14d
+      section 测试
+          集成测试    : crit,    test, after be,   7d
+          上线发布    : milestone, m1, after test, 0d

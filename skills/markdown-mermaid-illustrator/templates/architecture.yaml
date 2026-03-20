@@ -1,0 +1,22 @@
+name: "架构图"
+description: "展示系统分层、组件关系、环境栈"
+keywords: ["架构", "环境", "层次", "栈", "组件", "模块", "服务", "依赖"]
+patterns:
+  - type: "layered"
+    indicators: ["层", "上下", "基础", "底层", "顶层"]
+  - type: "component"
+    indicators: ["模块", "组件", "服务", "接口"]
+  - type: "stack"
+    indicators: ["栈", "环境", "安装", "部署"]
+
+mermaid_guidance: |
+  使用 flowchart LR（左至右水平扩展）为默认布局。
+  分层用 subgraph 表示（标题用双引号包裹），组件用语义化形状表示。
+  层间关系用箭头标注依赖方向：主链路 ==>，普通 -->，异步 -.->。
+  样式：在图表顶部定义 classDef（不指定 color），按语义分配到节点。
+  每个 subgraph 标题带图标增强辨识度。
+
+examples:
+  - "CANN → torch_npu → DrivingSDK → 模型依赖库 的环境栈"
+  - "前端 → API网关 → 微服务 → 数据库 的分层架构"
+  - "Agent 客户端 → Cloud LLM API 的交互架构"

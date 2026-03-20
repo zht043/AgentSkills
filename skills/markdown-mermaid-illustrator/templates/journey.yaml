@@ -1,0 +1,35 @@
+name: "用户旅程图"
+description: "展示用户在某个场景下的体验流程、情绪变化和接触点"
+keywords: ["用户旅程", "体验", "触点", "情绪", "旅程", "客户旅程", "体验地图"]
+patterns:
+  - type: "user-experience"
+    indicators: ["用户", "体验", "感受", "满意", "痛点", "接触点"]
+
+mermaid_guidance: |
+  使用 journey 类型。
+  title 设置标题，section 划分阶段，每行格式：任务名: 评分: 角色1, 角色2
+  评分 1-10，代表用户情绪（1=最差，10=最好）。
+  角色（Actor）全程一致，通常 1-3 个。
+  阶段（section）控制在 3-6 个。
+
+example: |
+  ---
+  config:
+    theme: neutral
+    look: neo
+  ---
+  journey
+      title 用户购买旅程
+      section 发现
+        看到广告: 6: 用户
+        搜索产品: 7: 用户
+      section 考虑
+        查看评价: 5: 用户
+        对比价格: 4: 用户
+      section 购买
+        加入购物车: 7: 用户
+        填写收货信息: 3: 用户
+        完成支付: 8: 用户
+      section 售后
+        收到货物: 9: 用户
+        评价产品: 6: 用户

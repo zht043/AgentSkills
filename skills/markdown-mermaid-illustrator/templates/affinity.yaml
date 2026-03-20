@@ -1,0 +1,47 @@
+name: "亲和图/分组归类"
+description: "将零散的想法、数据或问题按主题归组，用于头脑风暴整理"
+keywords: ["亲和图", "分组", "归类", "聚类", "整理", "归纳", "主题分类", "卡片分组"]
+patterns:
+  - type: "grouping"
+    indicators: ["归类", "分组", "整理", "收集", "聚在一起", "相似的"]
+
+mermaid_guidance: |
+  使用 flowchart LR，每个主题分组作为 subgraph。
+  各 subgraph 设置独立背景色（style 指令）。
+  节点内容是零散的想法/数据点，圆角矩形 (["文本"])。
+  各 subgraph 之间可以无连接线（只展示分组，不表达流程）。
+  若需跨组关联，用虚线 -.-> 连接。
+
+example: |
+  ---
+  config:
+    theme: neutral
+    look: neo
+  ---
+  flowchart LR
+      classDef idea fill:#3D7DC8,stroke:#1A4E8A,stroke-width:1.5px
+
+      subgraph UX["🎨 用户体验问题"]
+          direction TB
+          U1(["界面不直观"]):::idea
+          U2(["操作步骤繁琐"]):::idea
+          U3(["反馈不及时"]):::idea
+      end
+
+      subgraph Perf["⚡ 性能问题"]
+          direction TB
+          P1(["加载速度慢"]):::idea
+          P2(["内存占用高"]):::idea
+          P3(["崩溃频繁"]):::idea
+      end
+
+      subgraph Data["💾 数据问题"]
+          direction TB
+          D1(["数据不准确"]):::idea
+          D2(["同步延迟"]):::idea
+          D3(["丢数据风险"]):::idea
+      end
+
+      style UX   fill:#C4D3E8,stroke:#5599CC,stroke-width:2px
+      style Perf fill:#E8D5B8,stroke:#CC8833,stroke-width:2px
+      style Data fill:#C4D8CC,stroke:#55AA88,stroke-width:2px

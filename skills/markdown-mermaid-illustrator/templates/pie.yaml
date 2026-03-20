@@ -1,0 +1,28 @@
+name: "饼图"
+description: "展示各部分占整体的比例，适合份额、构成分析"
+keywords: ["饼图", "占比", "比例", "分布", "份额", "构成", "百分比"]
+patterns:
+  - type: "proportion"
+    indicators: ["占", "%", "百分比", "份额", "构成", "比例"]
+
+mermaid_guidance: |
+  使用 pie。
+  showData 可选，加上后在图例中显示具体数值。
+  数值不需要加百分号，Mermaid 自动计算比例。
+  标签用双引号包裹。
+  pie 不支持 classDef，颜色由主题自动分配。
+  类别不超过 8 个，超过后视觉过于拥挤。
+
+example: |
+  ---
+  config:
+    theme: neutral
+    look: neo
+  ---
+  pie showData
+      title 技术栈使用分布
+      "Python" : 35
+      "JavaScript" : 28
+      "Go" : 18
+      "Java" : 12
+      "其他" : 7

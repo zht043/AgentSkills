@@ -1,0 +1,40 @@
+name: "树状图/组织结构图"
+description: "层级结构展示，适合组织架构、目录树、分类体系"
+keywords: ["树状", "组织架构", "层级", "组织图", "部门", "岗位", "目录", "分类体系"]
+patterns:
+  - type: "hierarchy"
+    indicators: ["汇报", "下属", "上级", "子节点", "父节点", "目录", "层级"]
+
+mermaid_guidance: |
+  使用 flowchart TD。
+  层级结构从上到下，每层节点横向排列。
+  根节点在顶部，叶节点在底部。
+  同层节点用 ~~~ 对齐（可选）。
+  classDef 区分层级：根节点、中层节点、叶节点用不同颜色。
+  subgraph 可将同部门节点框在一起。
+
+example: |
+  ---
+  config:
+    theme: neutral
+    look: neo
+  ---
+  flowchart TD
+      classDef root fill:#3D7DC8,stroke:#1A4E8A,stroke-width:3px
+      classDef mid  fill:#7055BB,stroke:#412A88,stroke-width:2px
+      classDef leaf fill:#48A880,stroke:#256B4E,stroke-width:1.5px
+
+      CEO(["👑 CEO"]):::root
+
+      CEO --> CTO(["⚙️ CTO"]):::mid
+      CEO --> CFO(["💰 CFO"]):::mid
+      CEO --> CMO(["📣 CMO"]):::mid
+
+      CTO --> Dev(["💻 研发团队"]):::leaf
+      CTO --> Ops(["🔧 运维团队"]):::leaf
+      CFO --> Acc(["📊 财务团队"]):::leaf
+      CFO --> Leg(["⚖️ 法务团队"]):::leaf
+      CMO --> Mkt(["🎯 市场团队"]):::leaf
+      CMO --> Brd(["🎨 品牌团队"]):::leaf
+
+      CTO ~~~ CFO ~~~ CMO

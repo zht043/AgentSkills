@@ -1,0 +1,38 @@
+name: "四象限图"
+description: "二维矩阵分析，适用于优先级矩阵、波士顿矩阵、SWOT 空间分布等"
+keywords: ["四象限", "矩阵", "优先级", "波士顿", "重要紧急", "2x2", "对比分析"]
+patterns:
+  - type: "priority-matrix"
+    indicators: ["重要", "紧急", "优先级", "价值", "影响", "成本", "难度"]
+  - type: "bcg"
+    indicators: ["市场份额", "增长率", "明星", "现金牛", "问题", "瘦狗"]
+
+mermaid_guidance: |
+  使用 quadrantChart。
+  x-axis 定义横轴（左端标签 --> 右端标签）。
+  y-axis 定义纵轴（下端标签 --> 上端标签）。
+  quadrant-1/2/3/4 分别命名四个象限（从右上顺时针）。
+  点定义：名称: [x坐标, y坐标]（0-1 范围）。
+  quadrantChart 不支持中文 ID，节点名称可以是中文。
+
+example: |
+  ---
+  config:
+    theme: neutral
+    look: neo
+  ---
+  quadrantChart
+      title 功能优先级矩阵
+      x-axis 实现难度低 --> 实现难度高
+      y-axis 用户价值低 --> 用户价值高
+      quadrant-1 立即做
+      quadrant-2 规划做
+      quadrant-3 暂缓做
+      quadrant-4 重新评估
+      用户登录: [0.2, 0.9]
+      搜索功能: [0.4, 0.8]
+      数据导出: [0.6, 0.7]
+      AI 推荐: [0.8, 0.85]
+      主题换肤: [0.3, 0.3]
+      多语言: [0.7, 0.4]
+      社交分享: [0.5, 0.5]

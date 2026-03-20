@@ -1,0 +1,32 @@
+name: "状态图"
+description: "描述对象在不同状态间的转换，常用于生命周期、FSM、工单流转"
+keywords: ["状态", "状态机", "转换", "生命周期", "FSM", "工单", "审批流", "切换"]
+patterns:
+  - type: "lifecycle"
+    indicators: ["创建", "激活", "暂停", "关闭", "完成", "失败", "取消"]
+  - type: "fsm"
+    indicators: ["状态", "转换", "触发", "条件", "事件"]
+
+mermaid_guidance: |
+  使用 stateDiagram-v2。
+  [*] 表示开始和结束状态。
+  state "显示名" as StateID 为状态命名。
+  转换用 StateA --> StateB : 触发条件/事件。
+  并发状态用 state StateID { [*] --> Sub1 }。
+  Frontmatter 按规范 1。stateDiagram 不支持 classDef，颜色由主题控制。
+
+example: |
+  ---
+  config:
+    theme: neutral
+    look: neo
+  ---
+  stateDiagram-v2
+      [*] --> Draft : 创建
+      Draft --> Pending : 提交审核
+      Pending --> Approved : 审批通过
+      Pending --> Rejected : 审批拒绝
+      Approved --> Active : 发布
+      Active --> Archived : 归档
+      Rejected --> Draft : 修改后重提
+      Archived --> [*]

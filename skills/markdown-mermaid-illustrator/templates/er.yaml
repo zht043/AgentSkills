@@ -1,0 +1,52 @@
+name: "ER 图"
+description: "数据库实体关系图，展示数据表结构、字段和表间关系"
+keywords: ["ER", "实体", "数据库", "表", "关系", "外键", "主键", "数据模型", "schema"]
+patterns:
+  - type: "database"
+    indicators: ["表", "字段", "主键", "外键", "关联", "一对多", "多对多"]
+
+mermaid_guidance: |
+  使用 erDiagram。
+  关系语法：EntityA ||--|{ EntityB : "关系描述"
+  基数符号：|| 恰好一个，|{ 一个或多个，}o 零个或多个，|o 零个或一个。
+  实体属性：EntityName { type fieldName PK/FK "注释" }
+  类型用英文（string, int, datetime, boolean 等）。
+  erDiagram 不支持 classDef，外观由主题控制。
+
+example: |
+  ---
+  config:
+    theme: neutral
+    look: neo
+  ---
+  erDiagram
+      USER {
+          int id PK
+          string name
+          string email "唯一"
+          datetime created_at
+      }
+      ORDER {
+          int id PK
+          int user_id FK
+          string status
+          decimal total
+          datetime created_at
+      }
+      ORDER_ITEM {
+          int id PK
+          int order_id FK
+          int product_id FK
+          int quantity
+          decimal price
+      }
+      PRODUCT {
+          int id PK
+          string name
+          decimal price
+          int stock
+      }
+
+      USER ||--o{ ORDER : "下单"
+      ORDER ||--|{ ORDER_ITEM : "包含"
+      PRODUCT ||--o{ ORDER_ITEM : "被购买"

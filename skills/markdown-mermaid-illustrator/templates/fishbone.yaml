@@ -1,0 +1,57 @@
+name: "鱼骨图（石川图）"
+description: "分析问题或结果的根本原因，按类别展示因果关系"
+keywords: ["鱼骨", "根因", "原因分析", "因果", "为什么", "石川", "5M", "根本原因"]
+patterns:
+  - type: "root-cause"
+    indicators: ["原因", "导致", "影响", "根因", "分析", "为什么", "问题"]
+
+mermaid_guidance: |
+  Mermaid 无原生鱼骨图，用 flowchart LR 近似实现：
+  - 主结果节点在右侧（如 Result["❌ 问题描述"]）
+  - 各大类原因作为 subgraph，从左向右指向结果
+  - 子原因节点指向对应类别节点
+  - 大类通常：人员、方法、机器、材料、环境、测量（6M）
+  告知用户：这是鱼骨图的近似，排版与标准格式有差异。
+
+example: |
+  ---
+  config:
+    theme: neutral
+    look: neo
+  ---
+  flowchart LR
+      classDef cause  fill:#3D7DC8,stroke:#1A4E8A,stroke-width:2px
+      classDef cat    fill:#7055BB,stroke:#412A88,stroke-width:2px
+      classDef result fill:#C94444,stroke:#8B1A1A,stroke-width:2px
+
+      subgraph People["👤 人员"]
+          direction TB
+          P1(["培训不足"]):::cause
+          P2(["操作失误"]):::cause
+      end
+
+      subgraph Method["📋 方法"]
+          direction TB
+          M1(["流程缺失"]):::cause
+          M2(["标准不清"]):::cause
+      end
+
+      subgraph Machine["⚙️ 设备"])
+          direction TB
+          E1(["设备老化"]):::cause
+          E2(["维护不当"]):::cause
+      end
+
+      Result(["❌ 产品<br/>质量下降"]):::result
+
+      People  --> Result
+      Method  --> Result
+      Machine --> Result
+
+      style People  fill:#C4D3E8,stroke:#5599CC,stroke-width:1.5px
+      style Method  fill:#D0C8E8,stroke:#9977DD,stroke-width:1.5px
+      style Machine fill:#C4D8CC,stroke:#55AA88,stroke-width:1.5px
+
+limitations: |
+  这是 flowchart 近似的鱼骨图，与标准鱼骨图视觉差异较大。
+  如需标准格式，建议使用 draw.io 或 Miro。

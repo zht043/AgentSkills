@@ -1,0 +1,2 @@
+language: "zh"  # zh | en
+suggest_template_save: true  # 是否建议将新设计沉淀为模板

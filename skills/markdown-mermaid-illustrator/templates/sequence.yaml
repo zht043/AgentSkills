@@ -1,0 +1,22 @@
+name: "时序图"
+description: "展示组件间的交互顺序、消息传递、调用链"
+keywords: ["时序", "交互", "调用", "请求", "响应", "消息", "顺序"]
+patterns:
+  - type: "request-response"
+    indicators: ["请求", "响应", "返回", "调用"]
+  - type: "event-driven"
+    indicators: ["事件", "触发", "监听", "通知"]
+  - type: "lifecycle"
+    indicators: ["生命周期", "初始化", "销毁", "状态"]
+
+mermaid_guidance: |
+  使用 sequenceDiagram（时序图本身为纵向，不适用"默认 LR"规则）。
+  参与者用 participant 声明并带图标，按出现顺序排列，控制数量 <= 7 个。
+  同步调用用实线箭头 ->>，异步/返回用虚线 -->>。
+  可用 activate/deactivate 标注活跃期。
+  使用 autonumber 自动编号。
+  头部包含 config Frontmatter（theme: neutral, look: neo）。
+
+examples:
+  - "用户 → API → 数据库 的请求处理流程"
+  - "模块初始化的生命周期"

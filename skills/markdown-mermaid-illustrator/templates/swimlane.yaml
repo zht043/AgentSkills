@@ -1,0 +1,50 @@
+name: "泳道图"
+description: "用 subgraph 模拟泳道，区分不同角色或部门负责的流程步骤"
+keywords: ["泳道", "角色", "部门", "谁负责", "跨部门", "协作流程", "责任"]
+patterns:
+  - type: "role-based"
+    indicators: ["用户", "系统", "管理员", "部门", "角色", "前端", "后端"]
+
+mermaid_guidance: |
+  使用 flowchart TD（纵向），每个角色/部门作为一个 subgraph 泳道。
+  泳道之间的节点用箭头连接跨越 subgraph。
+  每条泳道 subgraph 设置独立背景色（style 指令），颜色参考规范 3 推荐色板。
+  节点用圆角 (["文本"])，判断用菱形 {"条件"}，开始/结束用圆角。
+  Frontmatter 按规范 1，classDef 定义在图表顶部。
+
+example: |
+  ---
+  config:
+    theme: neutral
+    look: neo
+  ---
+  flowchart TD
+      classDef user  fill:#3D7DC8,stroke:#1A4E8A,stroke-width:2px
+      classDef sys   fill:#7055BB,stroke:#412A88,stroke-width:2px
+      classDef admin fill:#48A880,stroke:#256B4E,stroke-width:2px
+
+      subgraph User["👤 用户"]
+          U1(["提交申请"]) --> U2(["等待审批"])
+          U3(["收到通知"])
+      end
+
+      subgraph System["⚙️ 系统"]
+          S1(["校验数据"]):::sys --> S2{"是否合规？"}:::sys
+          S2 -- "是" --> S3(["发送审批请求"]):::sys
+          S2 -- "否" --> S4(["返回错误"]):::sys
+      end
+
+      subgraph Admin["🔐 管理员"]
+          A1(["收到申请"]):::admin --> A2{"审批？"}:::admin
+          A2 -- "通过" --> A3(["发送通知"]):::admin
+          A2 -- "拒绝" --> A4(["发送驳回"]):::admin
+      end
+
+      U1:::user --> S1
+      S3 --> A1
+      A3 --> U3:::user
+      A4 --> U3
+
+      style User   fill:#C4D3E8,stroke:#5599CC,stroke-width:2px
+      style System fill:#D0C8E8,stroke:#9977DD,stroke-width:2px
+      style Admin  fill:#C4D8CC,stroke:#55AA88,stroke-width:2px

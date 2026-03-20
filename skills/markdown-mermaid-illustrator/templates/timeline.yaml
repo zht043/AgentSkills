@@ -1,0 +1,33 @@
+name: "时间线图"
+description: "按时间顺序展示历史事件、产品演进、版本发布"
+keywords: ["时间线", "历史", "演进", "版本", "发布", "里程碑", "发展历程", "年份"]
+patterns:
+  - type: "chronological"
+    indicators: ["年", "月", "版本", "发布", "演进", "历程", "起源"]
+
+mermaid_guidance: |
+  使用 timeline。
+  格式：时间标签 : 事件1 : 事件2（同一时间点可多个事件）
+  时间标签可以是年份、季度、版本号、任意文本。
+  section 可将时间线分段（如按阶段划分）。
+  timeline 不支持 classDef，外观由主题控制。
+
+example: |
+  ---
+  config:
+    theme: neutral
+    look: neo
+  ---
+  timeline
+      title AI 大模型发展历程
+      section 早期探索
+          2017 : Transformer 论文发布
+          2018 : GPT-1 发布 : BERT 发布
+      section 规模扩展
+          2019 : GPT-2 发布
+          2020 : GPT-3 发布（1750亿参数）
+          2021 : Codex 发布
+      section 对话革命
+          2022 : ChatGPT 发布 : InstructGPT
+          2023 : GPT-4 : Claude 2 : Llama 2
+          2024 : GPT-4o : Claude 3 : Gemini 1.5

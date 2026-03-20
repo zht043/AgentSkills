@@ -1,0 +1,20 @@
+name: "决策树"
+description: "展示选型决策、路由逻辑、条件分支"
+keywords: ["选择", "决策", "选型", "推荐", "路由", "优先"]
+patterns:
+  - type: "selection"
+    indicators: ["选择", "推荐", "最适合", "优先", "首选"]
+  - type: "routing"
+    indicators: ["路由", "分发", "转发", "判断"]
+  - type: "comparison"
+    indicators: ["对比", "比较", "vs", "还是"]
+
+mermaid_guidance: |
+  使用 flowchart LR 或 flowchart TD（当决策层级较深适合纵向展示时）。
+  决策节点用菱形 {"条件"}:::decision，结果节点用圆角 (["结果"]):::result。
+  分支用带标签的箭头 -- "条件" --> 连接。
+  在图表顶部定义 classDef decision 和 classDef result（不指定 color）。
+
+examples:
+  - "模型选型：最在意什么？→ 性能/成本/开源 → 具体方案"
+  - "技术栈选择决策树"

@@ -2,3 +2,6 @@
 __pycache__/
 docs/plans/
 
+preview/**
+
+mermaid-diagram-designer.md

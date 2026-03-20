@@ -1,0 +1,48 @@
+name: "类图"
+description: "面向对象设计的类结构、继承关系、接口实现，常见于 UML 文档"
+keywords: ["类图", "类", "对象", "继承", "接口", "UML", "多态", "封装", "方法", "属性"]
+patterns:
+  - type: "oop"
+    indicators: ["类", "继承", "实现", "接口", "抽象", "方法", "属性", "实例"]
+
+mermaid_guidance: |
+  使用 classDiagram。
+  类定义：class ClassName { +type field; +method() returnType }
+  可见性：+ public, - private, # protected, ~ package
+  关系：<|-- 继承，<|.. 实现接口，*-- 组合，o-- 聚合，--> 关联，-- 依赖
+  注解：<<interface>>, <<abstract>>, <<enum>>, <<service>>
+  classDiagram 不支持 classDef 配色，外观由主题控制。
+
+example: |
+  ---
+  config:
+    theme: neutral
+    look: neo
+  ---
+  classDiagram
+      class Animal {
+          <<abstract>>
+          +string name
+          +int age
+          +speak() string
+          +move() void
+      }
+      class Dog {
+          +string breed
+          +speak() string
+          +fetch() void
+      }
+      class Cat {
+          +bool indoor
+          +speak() string
+          +purr() void
+      }
+      class PetOwner {
+          +string name
+          +List~Animal~ pets
+          +addPet(animal Animal) void
+      }
+
+      Animal <|-- Dog
+      Animal <|-- Cat
+      PetOwner o-- Animal : "拥有"

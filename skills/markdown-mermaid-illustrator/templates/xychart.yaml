@@ -1,0 +1,34 @@
+name: "折线图/柱状图"
+description: "展示数值趋势、对比数据，适合简单的量化分析"
+keywords: ["折线图", "柱状图", "趋势", "数值", "增长", "对比", "数据", "统计"]
+patterns:
+  - type: "trend"
+    indicators: ["趋势", "增长", "下降", "变化", "月度", "季度", "同比", "环比"]
+  - type: "comparison"
+    indicators: ["对比", "比较", "多少", "数量", "数值"]
+
+mermaid_guidance: |
+  使用 xychart-beta（注意：beta 功能，部分平台可能不支持）。
+  x-axis 定义横轴标签列表。
+  y-axis 定义纵轴范围（可选）。
+  bar [values] 绘制柱状图。
+  line [values] 绘制折线图（可与 bar 叠加）。
+  数值数量必须与 x-axis 标签数量完全一致。
+  仅适合简单数据；复杂数据可视化建议使用 ECharts / Plotly。
+
+example: |
+  ---
+  config:
+    theme: neutral
+    look: neo
+  ---
+  xychart-beta
+      title "月度活跃用户（万人）"
+      x-axis ["1月", "2月", "3月", "4月", "5月", "6月"]
+      y-axis "用户数（万）" 0 --> 100
+      bar  [42, 55, 61, 74, 83, 91]
+      line [42, 55, 61, 74, 83, 91]
+
+limitations: |
+  xychart-beta 是实验功能，在 GitHub 等平台可能渲染异常。
+  如需生产可用的数据图表，推荐使用 ECharts、Plotly 或 Vega-Lite。

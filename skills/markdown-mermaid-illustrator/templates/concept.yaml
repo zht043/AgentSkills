@@ -1,0 +1,22 @@
+name: "概念图"
+description: "展示概念关系、映射机制、数据转换"
+keywords: ["概念", "关系", "映射", "替换", "转换", "对应"]
+patterns:
+  - type: "mapping"
+    indicators: ["映射", "替换", "对应", "转换", "→"]
+  - type: "containment"
+    indicators: ["包含", "组成", "内部", "嵌套"]
+  - type: "taxonomy"
+    indicators: ["分类", "类型", "继承", "层级"]
+
+mermaid_guidance: |
+  灵活选择图表类型和布局：
+  - 映射/替换关系：flowchart LR，用虚线 -.-> 和实线 --> 区分替换前后
+  - 包含关系：flowchart LR + subgraph
+  - 分类关系：flowchart TD 树状展开（仅此场景允许 TD）
+  - 思维导图：mindmap（多维度发散关系）
+  使用 classDef 按语义分配不同颜色（不指定 color），区分概念间的不同关系类型。
+
+examples:
+  - "AtomicPatch: target → replacement 的运行时替换机制"
+  - "数据模型之间的映射关系"
