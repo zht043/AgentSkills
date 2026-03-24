@@ -105,7 +105,24 @@ npu-smi info watch
 ```
 （部分版本参数可能不同，可用 `npu-smi info -h` 查看具体用法）
 
-2. **重置 NPU 设备**（卡死/异常时使用，⚠️ 会中断所有占用进程）：
+2. **先判断是否为异常占用，再决定是否清理 Python 进程**：
+```bash
+ps -ef | grep python | grep -v grep
+npu-smi info
+```
+先对照 `ps` / `pgrep` 和 `npu-smi info` 判断：
+- 如果能看到明确在跑的训练任务，而且无法确认是否属于当前任务或残余任务，不能直接 `pkill`，应先询问用户。
+- 如果 `npu-smi info` 显示有占用，但 `ps` / `pgrep` 已看不到对应 Python 进程，或确认是上一次异常退出遗留的残余训练进程，才可执行下面的清理。
+
+3. **仅在确认是异常占用时，清理残余 Python 训练进程**（出现 HCCL 端口冲突、残余显存占用、幽灵任务时使用）：
+```bash
+pkill -9 python
+sleep 3
+npu-smi info
+```
+如果 `npu-smi info` 里仍有残余占用，但 `ps` / `pgrep` 已看不到对应 PID，说明可能只剩 NPU 侧残留上下文，这时再继续做设备级 reset 或服务级清理。
+
+4. **重置 NPU 设备**（卡死/异常时使用，⚠️ 会中断所有占用进程，应先询问用户）：
 ```bash
 npu-smi set -t reset -i <设备ID> -c <芯片ID>
 ```
